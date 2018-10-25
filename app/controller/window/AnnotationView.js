@@ -52,35 +52,40 @@ Ext.define('EdiromOnline.controller.window.AnnotationView', {
     onShowAnnotation: function(view, uri) {
 
         var editionId = this.application.activeEdition;
+        var lang = getPreference('application_language');
     
-        window.doAJAXRequest('data/xql/getAnnotationText.xql',
-            'GET', 
-            {
+        Ext.Ajax.request({
+            url: 'data/xql/getAnnotationText.xql',
+            method: 'GET',
+            params: {
                 uri: uri,
-                edition: EdiromOnline.getApplication().activeEdition
+                lang: lang
             },
-            Ext.bind(function(response){
+            success: function(response){
                 view.setContent(response.responseText);
-            }, this)
-        );
-        
-        window.doAJAXRequest('data/xql/getAnnotationMeta.xql',
-            'GET', 
-            {
-                uri: uri,
-                edition: EdiromOnline.getApplication().activeEdition
             },
-            Ext.bind(function(response){
+            scope: this
+        });
+
+        Ext.Ajax.request({
+            url: 'data/xql/getAnnotationMeta.xql',
+            method: 'GET',
+            params: {
+                uri: uri,
+                lang: lang
+            },
+            success: function(response){
                 view.setMeta(response.responseText);
-            }, this)
-        );
-        
+            },
+            scope: this
+        });
+
         window.doAJAXRequest('data/xql/getAnnotationPreviews.xql',
             'GET', 
             {
                 uri: uri,
-                /*From Freidi: edition: editionId*/
-                edition: EdiromOnline.getApplication().activeEdition
+                edition: editionId,
+                lang: lang
             },
             Ext.bind(function(response){
                 var data = Ext.JSON.decode(response.responseText);

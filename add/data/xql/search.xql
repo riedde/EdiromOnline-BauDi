@@ -86,12 +86,12 @@ let $return :=
     let $search := 
         if(string-length($term) gt 0)
         then(
-            collection('/db/contents/BauDi')//tei:text[ft:query(., $term)]/ancestor::tei:TEI
-            | collection('/db/contents/BauDi')//tei:title[ft:query(., $term)]/ancestor::tei:TEI
-            | collection('/db/contents/BauDi')//mei:mei[ft:query(., $term)]
-            | collection('/db/contents/BauDi')//mei:title[ft:query(., $term)]/ancestor::mei:mei
-            | collection('/db/contents/BauDi')//mei:annot[ft:query(., $term)][@type eq 'editorialComment']
-            | collection('db/contents/BauDi')//mei:annot[contains(@xml:id, $term)]
+            collection('/db/contents/edition-rwa')//tei:text[ft:query(., $term)]/ancestor::tei:TEI
+            | collection('/db/contents/edition-rwa')//tei:title[ft:query(., $term)]/ancestor::tei:TEI
+            | collection('/db/contents/edition-rwa')//mei:mei[ft:query(., $term)]
+            | collection('/db/contents/edition-rwa')//mei:title[ft:query(., $term)]/ancestor::mei:mei
+            | collection('/db/contents/edition-rwa')//mei:annot[ft:query(., $term)][@type eq 'editorialComment']
+            | collection('db/contents/edition-rwa')//mei:annot[contains(@xml:id, $term)]
         )
         else()
     
@@ -133,8 +133,8 @@ let $return :=
     
         <div class="searchResultDoc">
             <div class="doc"><span class="resultTitle" onclick="{
-                if (contains($uri, 'BauDi/texts/' ))
-                then (concat('loadLink(&apos;xmldb:exist:///db/apps/baudi/$encyclo/', substring-after($uri, 'BauDi/texts/'), '?term=', replace($term, '"', '\\"'), '&apos;, {})'))
+                if (contains($uri, 'edition-rwa/texts/' ))
+                then (concat('loadLink(&apos;xmldb:exist:///db/apps/rwaEncyclo/$encyclo/', substring-after($uri, 'edition-rwa/texts/'), '?term=', replace($term, '"', '\\"'), '&apos;, {})'))
                 else(concat('loadLink(&apos;xmldb:exist://', $uri,
                     if(local-name($hit) eq 'annot')
                     then(concat('#', $hit/@xml:id))
@@ -149,8 +149,8 @@ let $return :=
             return
                 <div class="hitP" style="{if($i gt 3)then('display:none;')else('')}">{
                 kwic:get-summary($match, ($match/exist:match)[1], <config width="100" link="{
-                if (contains($uri, 'BauDi/texts/' ))
-                then (concat('loadLink(&apos;xmldb:exist:///db/apps/baudi/$encyclo/', substring-after($uri, 'BauDi/texts/'), '?path=', $path, '&amp;term=', replace($term, '"', '\\"'), '&apos;, {})')) else (concat('loadLink(&apos;xmldb:exist://', $uri, if($internalId)then(concat('#', $internalId))else(), '?path=', $path, '&amp;term=', replace($term, '"', '\\"'),'&apos;);')) }" />,
+                if (contains($uri, 'edition-rwa/texts/' ))
+                then (concat('loadLink(&apos;xmldb:exist:///db/apps/rwaEncyclo/$encyclo/', substring-after($uri, 'edition-rwa/texts/'), '?path=', $path, '&amp;term=', replace($term, '"', '\\"'), '&apos;, {})')) else (concat('loadLink(&apos;xmldb:exist://', $uri, if($internalId)then(concat('#', $internalId))else(), '?path=', $path, '&amp;term=', replace($term, '"', '\\"'),'&apos;);')) }" />,
                     util:function(xs:QName("local:filter"), 2))
                }</div>
             ,

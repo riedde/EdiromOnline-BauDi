@@ -283,7 +283,7 @@ Ext.define('EdiromOnline.view.window.source.SourceView', {
         var me = this;
 
         me.pageBasedView.setPage(combo, store);
-        
+
         if(me.measuresVisible)
             this.fireEvent('measureVisibilityChange', me, true);
 
@@ -293,6 +293,7 @@ Ext.define('EdiromOnline.view.window.source.SourceView', {
 
     showPage: function(pageId) {
         var me = this;
+
         me.pageBasedView.showPage(pageId);
     },
 
@@ -388,21 +389,13 @@ Ext.define('EdiromOnline.view.window.source.SourceView', {
         me.bottomBar.add({xtype:'tbseparator'});
 
         var entries = me.pageBasedView.createToolbarEntries();
-
-		var image_server = getPreference('image_server');
-
         Ext.Array.each(entries, function(entry) {
-			if(image_server === 'digilib' || image_server === 'openseadragon'){
-				me.bottomBar.add(entry);    
-			}
-			else if(entry.initialCls !== 'zoomSlider' && entry.xtype !== 'tbseparator'){
-				me.bottomBar.add(entry);  
-			}      
+            me.bottomBar.add(entry);        
         });
         
         entries = me.measureBasedView.createToolbarEntries();
-        Ext.Array.each(entries, function(entry) {			
-				me.bottomBar.add(entry);     
+        Ext.Array.each(entries, function(entry) {
+            me.bottomBar.add(entry);        
         });
     },
 
@@ -445,7 +438,7 @@ Ext.define('EdiromOnline.view.window.source.SourceView', {
         var me = this;
         me.measuresVisible = state;
         me.measuresVisibilitySetLocaly = true;
-        
+
         this.fireEvent('measureVisibilityChange', me, state);
     },
 
@@ -466,8 +459,7 @@ Ext.define('EdiromOnline.view.window.source.SourceView', {
             movements: me.movements,
             callback: Ext.bind(function(measure, movementId) {
                 this.fireEvent('gotoMeasureByName', this, measure, movementId);
-            }, 
-            me)
+            }, me)
         }).show();
     },
 
@@ -477,12 +469,10 @@ Ext.define('EdiromOnline.view.window.source.SourceView', {
 
     showMeasure: function(movementId, measureId, measureCount) {
         var me = this;
-       
         if(me.activeView !== 'measureBasedView')
-        	me.switchInternalView('measureBasedView');
-       
+            me.switchInternalView('measureBasedView');
+            
         me.measureBasedView.showMeasure(movementId, measureId, measureCount);
-   
     },
     
     gotoZone: function(zoneId) {

@@ -48,7 +48,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     shapesHidden: false,
 
     svgOverlays: null,
-    annotSVGOverlays: null,
     
     annotTipWidth: 500,
     annotTipMaxWidth: 500,
@@ -75,7 +74,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
 
         me.shapes = new Ext.util.MixedCollection();
         me.svgOverlays = new Ext.util.MixedCollection();
-        me.annotSVGOverlays = [];
 
         me.callParent();
 
@@ -93,7 +91,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     showImage: function(path, width, height, pageId) {
-    
         var me = this;
 
         me.imgWidth = width;
@@ -118,13 +115,21 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     clear: function() {
-    
         var me = this;
+        //console.log("clear");
+        //console.log(me.shapes);
 
         // remove all shapes
-        me.shapes.eachKey(function(groupName) {
-            me.removeShapes(groupName);
+        var keys = [];
+        me.shapes.eachKey(function(key) {
+	       keys.push(key); 
         });
+        
+        for(var i = 0; i < keys.length; i++) {
+	        var groupName = keys[i];
+	        //console.log(groupName);
+            me.removeShapes(groupName);
+        };
 
         me.svgOverlays.each(function(svg) {
            svg.destroy();
@@ -145,7 +150,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     addAnnotations: function(annotations) {
-    	
         var me = this;
 
         me.shapes.add('annotations', []);
@@ -157,18 +161,17 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
 
         annotations.each(function(annotation) {
 
+            Ext.Array.each(annotation.get('svgList'), function(svg) {
+                this.addSVGOverlay(svg.id, svg.svg);
+            }, me);
+
             var name = annotation.get('title');
             var uri = annotation.get('uri');
             var categories = annotation.get('categories');
             var priority = annotation.get('priority');
-            var fn = annotation.get('fn');          
+            var fn = annotation.get('fn');
+
             var plist = Ext.Array.toArray(annotation.get('plist'));
-            
-            Ext.Array.each(annotation.get('svgList'), function(svg) {
-                this.addSVGOverlay(svg.id, svg.svg, name, uri, fn);
-                Ext.Array.push(this.annotSVGOverlays, svg.id);
-            }, me);
-            
             Ext.Array.insert(me.shapes.get('annotations'), 0, plist);
 
             Ext.Array.each(plist, function(shape) {
@@ -216,9 +219,7 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
                         {
                             uri: uri,
                             target: 'tip',
-                            edition: EdiromOnline.getApplication().activeEdition
-                       
-
+                            lang: getPreference('application_language')
                         },
                         Ext.bind(function(response){
                             this.update(response.responseText);
@@ -232,7 +233,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     listenForShapeLink: function(e, dom, args) {
-    
         var me = this;
 
         if(e.button != 0) return;
@@ -245,12 +245,10 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     openShapeLink: function(e, dom, args) {
-    	
         eval(args.fn);
     },
 
     addMeasures: function(shapes) {
-   
         var me = this;
 
         me.shapes.add('measures', shapes);
@@ -287,7 +285,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     highlightShape: function(event, owner, shape) {
-    
         shape.addCls('highlighted');
         
         var annotId = shape.getAttribute('data-edirom-annot-id');
@@ -296,7 +293,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     deHighlightShape: function(event, owner, shape) {
-    
         shape.removeCls('highlighted');
         
         var annotId = shape.getAttribute('data-edirom-annot-id');
@@ -305,7 +301,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     repositionShapes: function() {
-    
         var me = this;
 
         if(me.shapesHidden) return;
@@ -409,20 +404,18 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     getShapes: function(groupName) {
-    
         var me = this;
         return me.shapes.get(groupName);
     },
 
     getShapeElem: function(shapeId) {
-   
         var me = this;
         var shapeDiv = me.el.getById(me.id + '_facsContEvents');
         return shapeDiv.getById(me.id + '_' + shapeId);
     },
 
     removeShapes: function(groupName) {
-   
+	    //console.log("removeShape: " + groupName)
         var me = this;
         var shapeDiv = me.el.getById(me.id + '_facsContEvents');
 
@@ -437,7 +430,7 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
             }catch(e) {
                 id = shape.id;
             }
-
+			//console.log(shapeDiv.getById(me.id + '_' + id));
             Ext.removeNode(shapeDiv.getById(me.id + '_' + id).dom);
         };
 
@@ -447,15 +440,9 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
             Ext.Array.each(me.shapes.get(groupName), fn);
 
         me.shapes.add(groupName, []);
-        
-        Ext.Array.each(me.annotSVGOverlays, function(svg) {
-            this.removeSVGOverlay(svg);
-        }, me);
-        me.annotSVGOverlays = [];
     },
 
     hideShapes: function() {
-    
         var me = this;
         if(!me.shapesHidden) {
             me.shapesHidden = true;
@@ -465,7 +452,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     showShapes: function() {
-    
         var me = this;
         if(me.shapesHidden) {
             me.shapesHidden = false;
@@ -475,14 +461,13 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
         }
     },
 
-    addSVGOverlay: function(overlayId, overlay, name, uri, fn) {
-    
+    addSVGOverlay: function(overlayId, overlay) {
         var me = this;
         var sibling = me.el.getById(me.id + '_facsContEvents');
 
         var dh = Ext.DomHelper;
         var id = Ext.id({});
-        var svg = dh.append(sibling, {
+        var svg = dh.insertBefore(sibling, {
             id: me.id + '_' + id,
             tag: 'div',
             cls: 'overlay',
@@ -493,52 +478,17 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
         svg.child('svg', true).setAttribute("height", me.imgHeight * me.zoom);
         svg.child('svg', true).setAttribute("style", "top:" +  me.offY + "px; left:" +  me.offX + "px; position: absolute;");
 
-        if(typeof uri != 'undefined' || typeof fn != 'undefined') {
-            var children = svg.child('svg', true).children;
-            for(var i = 0; i < children.length; i++) {
-                var elem = children[i];
-                elem.setAttribute("id", me.id + '_' + Ext.id({}));
-                
-                if(typeof fn != 'undefined')
-                    elem.setAttribute('onmousedown', fn);
-                
-                if(typeof uri != 'undefined') {
-                    var tip = Ext.create('Ext.tip.ToolTip', {
-                        target: elem.id,
-                        cls: 'annotationTip',
-                        width: me.annotTipWidth,
-                        maxWidth: me.annotTipMaxWidth,
-                        height: me.annotTipHeight,
-                        maxHeight: me.annotTipMaxHeight,
-                        dismissDelay: 0,
-                        anchor: 'left',
-                        html: getLangString('Annotation_plus_Title', name)
-                    });
-                    tip.on('afterrender', function() {
-                        window.doAJAXRequest('data/xql/getAnnotation.xql', 'GET', {
-                            uri: uri,
-                            target: 'tip',
-                            edition: EdiromOnline.getApplication().activeEdition
-                        }, Ext.bind(function(response) {
-                            this.update(response.responseText);
-                        }, this));
-                    }, tip);
-                }
-            }
-        }
-
         me.svgOverlays.add(overlayId, svg);
     },
 
     removeSVGOverlay: function(overlayId) {
-    
         var me = this;
         me.svgOverlays.get(overlayId).destroy();
         me.svgOverlays.removeAtKey(overlayId);
     },
 
     onMouseDown: function(e) {
-   
+
         var me = this;
 
         me.hiResImg.hide();
@@ -555,7 +505,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     onMouseMove: function(e) {
-    
         var me = this;
 
         var offX = me.mouseOffX - (me.posX - e.getPageX());
@@ -565,7 +514,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     onMouseUp: function(e) {
-   
         var me = this;
 
         Ext.getDoc().un('mousemove', me.onMouseMove, me);
@@ -581,7 +529,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     onScroll: function(e) {
-    
         var me = this, delta;
 
         me.hiResImg.hide();
@@ -614,7 +561,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     hiResAfterScroll: function(zoomTime) {
-    
         var me = this;
 
         if(me.lastZoom == zoomTime) {
@@ -624,14 +570,12 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     fitInImage: function() {
-    
         var me = this;
 
         me.showRect(0, 0, me.imgWidth, me.imgHeight);
     },
 
     showRect: function(x, y, width, height, highlight) {
-    
         var me = this;
 
         me.hiResImg.hide();
@@ -667,7 +611,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
     
     getActualRect: function() {
-    
         var me = this;
         return {
             x: Math.max(Math.round(- me.offX / me.zoom), 0),
@@ -678,7 +621,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     createTempRect: function(x, y, width, height) {
-    
         var me = this;
 
         if(!me.shapes.containsKey('temp'))
@@ -716,7 +658,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     destroyTempRect: function(shape) {
-    
         var me = this;
         
         if(typeof me.el == 'undefined') return;
@@ -737,7 +678,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     setZoomAndCenter: function(z) {
-    
         var me = this;
 
         me.hiResImg.hide();
@@ -755,7 +695,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     setSVGZoom: function(z) {
-    
         var me = this;
 
         me.zoom = z;
@@ -772,7 +711,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     setSVGOffset: function(x, y) {
-    
         var me = this;
 
         me.offX = x;
@@ -788,7 +726,7 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     calculateHiResImg: function() {
-    
+
         var me = this;
 
         if(me.zoom < me.baseImgZoom || typeof me.hiResImg == 'undefined') return;
@@ -845,11 +783,9 @@ Ext.define('EdiromOnline.view.window.image.ImageLoader', {
 
         Ext.apply(me, config);
         me.img = new Image();
-        
     },
 
     addJob: function(job) {
-   
         var me = this;
 
         me.queue.push(job);
@@ -861,7 +797,7 @@ Ext.define('EdiromOnline.view.window.image.ImageLoader', {
     },
 
     runJob: function(me, job) {
-    
+
         if(Ext.Array.indexOf(me.queue, job) != me.queue.length - 1) {
             return;
         }

@@ -20,10 +20,9 @@ Ext.define('EdiromOnline.Application', {
     name: 'EdiromOnline',
 
     extend: 'Ext.app.Application',
-    
+
     controllers: [
         'AJAXController',
-        'CookieController',
         'LanguageController',
         'PreferenceController',
         'ToolsController',
@@ -62,14 +61,12 @@ Ext.define('EdiromOnline.Application', {
     ],
     
     //TODO:
-    activeEdition: 'xmldb:exist:///db/contents/editionFiles/baudi_Vol-1.xml',
-   /* activeWork: 'edirom_work_743373fb-4dcf-4329-90c0-fd1eacc9ea69', */
+    activeEdition: 'xmldb:exist:///db/contents/edition-rwa/ediromEditions/rwaVol_II-8.xml',
+    activeWork: '', 
 
     launch: function() {
         var me = this;
-        
-        window.getActiveEdition = Ext.bind(this.getActiveEdition, this);
-
+       
         me.addEvents('workSelected');
         
         var editionParam = me.getURLParameter('edition');
@@ -106,8 +103,7 @@ Ext.define('EdiromOnline.Application', {
         });
         
         me.getController('PreferenceController').initPreferences(me.activeEdition);
-        me.getController('LanguageController').initLangFile(me.activeEdition, 'de');
-        me.getController('LanguageController').initLangFile(me.activeEdition, 'en');
+        me.getController('LanguageController').initLangFile(me.activeEdition);
         me.initDataStores();
 
         var app = Ext.create('EdiromOnline.view.desktop.App', {app: this});
@@ -145,18 +141,8 @@ Ext.define('EdiromOnline.Application', {
             storeId: 'Works'
         });
 
-        works.getProxy().extraParams = {editionId: this.activeEdition};
+        works.getProxy().extraParams = {editionId: this.activeEdition, lang: getPreference('application_language')};
         works.load();
-    },
-    
-    getActiveEdition: function() {
-        return this.activeEdition;
-    },
-    
-    selectEdition: function(editionId) {
-        this.activeEdition = editionId;
-        this.fireEvent('editionSelected', editionId);
-        window.open(window.location.pathname + '?edition=' + editionId, "_self");
     },
     
     selectWork: function(workId) {

@@ -49,6 +49,7 @@ Ext.define('EdiromOnline.controller.window.SingleWindowController', {
 
     onWindowRendered: function(win) {
         var me = this;
+        var lang = getPreference('application_language');
 
         if(win.initialized) return;
         win.initialized = true;
@@ -56,7 +57,8 @@ Ext.define('EdiromOnline.controller.window.SingleWindowController', {
         window.doAJAXRequest('data/xql/getLinkTarget.xql',
             'POST', 
             {
-                uri: win.uri
+                uri: win.uri,
+                lang: lang
             },
             Ext.bind(function(response){
                 var data = response.responseText;
@@ -71,7 +73,24 @@ Ext.define('EdiromOnline.controller.window.SingleWindowController', {
         var me = this;
         var views = [];
         
+        //console.log("onMetaDataLoaded config");
+        //console.log(config);
+        
         Ext.Array.each(config.views, function(view) {
+	        
+	        //console.log("onMetaDataLoaded");
+	        //console.log(view);
+	        
+	        var uri = view.uri;
+	        
+	        if(view.type == "iFrameView" && config["term"] != "" && config["path"] != "") {
+		        //console.log("TERM FOUND");
+		        uri = uri + "?term=" + config["term"] + "&path=" + config["path"] + "#searchTarget";
+	        }
+	        
+	        if(view.type == "iFrameView" && config["internalId"] != "") {
+		        uri = uri + "#" + config["internalId"];
+	        }
 
             views.push(this.createView(view.type, {
                 window:win,
@@ -79,7 +98,7 @@ Ext.define('EdiromOnline.controller.window.SingleWindowController', {
                 viewType: view.type,
                 viewLabel: view.label,
                 defaultView: view.defaultView,
-                uri:view.uri
+                uri:uri
             }));
 
         }, me);
@@ -95,6 +114,9 @@ Ext.define('EdiromOnline.controller.window.SingleWindowController', {
         var id = type;
         var label = (config.viewLabel && config.viewLabel != ''?config.viewLabel:me.getLabel(type));
         var viewClass = me.getViewClass(type);
+        
+        //console.log("createView");
+        //console.log(config);
 
         return {
             id: id,
@@ -112,7 +134,7 @@ Ext.define('EdiromOnline.controller.window.SingleWindowController', {
             case 'audioView': return getLangString('controller.window.Window_audioView');
 	        case 'verovioView': return getLangString('controller.window.Window_verovioView');
             case 'headerView': return getLangString('controller.window.Window_headerView');
-            case 'facsimileView': return 'Facsimile';
+            case 'facsimileView': return 'Faksimile';
             case 'textView': return getLangString('controller.window.Window_textView');
             case 'annotationView': return getLangString('controller.window.Window_annotationView');
             case 'textFacsimileSplitView': return getLangString('controller.window.Window_textFacsimileSplitView');
