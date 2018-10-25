@@ -11,4 +11,5 @@
     <prepare>pre-install.xql</prepare>
     <finish/>
     <permissions user="edirom" password="edirom" group="dba" mode="0775"/>
+    <permissions user="guest" password="" group="baudi" mode="0775"/>
 </meta>
