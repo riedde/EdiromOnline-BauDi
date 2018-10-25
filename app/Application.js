@@ -62,7 +62,7 @@ Ext.define('EdiromOnline.Application', {
     ],
     
     //TODO:
-    activeEdition: 'xmldb:exist:///db/contents/h-moll/edition.xml',
+    activeEdition: 'xmldb:exist:///db/contents/editionFiles/baudi_Vol-1.xml',
    /* activeWork: 'edirom_work_743373fb-4dcf-4329-90c0-fd1eacc9ea69', */
 
     launch: function() {
