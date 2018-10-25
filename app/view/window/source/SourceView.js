@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2011 The Edirom Project
+ *  Copyright (C) 2014 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,19 +15,13 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  ID: $Id: SourceView.js 1455 2012-10-11 10:42:55Z daniel $
  */
-Ext.define('de.edirom.online.view.window.source.SourceView', {
-    extend: 'Ext.panel.Panel',
-
-    mixins: {
-        observable: 'Ext.util.Observable'
-    },
+Ext.define('EdiromOnline.view.window.source.SourceView', {
+    extend: 'EdiromOnline.view.window.View',
 
     requires: [
-        'de.edirom.online.view.window.source.PageBasedView',
-        'de.edirom.online.view.window.source.MeasureBasedView',
+        'EdiromOnline.view.window.source.PageBasedView',
+        'EdiromOnline.view.window.source.MeasureBasedView',
 
         'Ext.draw.Component',
         'Ext.slider.Single',
@@ -43,10 +37,12 @@ Ext.define('de.edirom.online.view.window.source.SourceView', {
 
     activeView: 'pageBasedView',
 
-    measuresVisible: false,
+    measuresVisible: true,
     measuresVisibilitySetLocaly: false,
-    annotationsVisible: false,
+    annotationsVisible: true,
     annotationsVisibilitySetLocaly: false,
+    
+    cls: 'sourceView',
     
     initComponent: function () {
 
@@ -61,11 +57,11 @@ Ext.define('de.edirom.online.view.window.source.SourceView', {
             'gotoZone',
             'afterImagesLoaded');
 
-        me.pageBasedView = Ext.create('de.edirom.online.view.window.source.PageBasedView', {
+        me.pageBasedView = Ext.create('EdiromOnline.view.window.source.PageBasedView', {
             owner: me
         });
 
-        me.measureBasedView = Ext.create('de.edirom.online.view.window.source.MeasureBasedView', {
+        me.measureBasedView = Ext.create('EdiromOnline.view.window.source.MeasureBasedView', {
             owner: me
         });
 
@@ -79,7 +75,7 @@ Ext.define('de.edirom.online.view.window.source.SourceView', {
             ]
         });
 
-        me.bottomBar = new de.edirom.online.view.window.BottomBar({owner:me, region:'south', enableOverflow: false});
+        me.bottomBar = new EdiromOnline.view.window.BottomBar({owner:me, region:'south', enableOverflow: false});
 
         me.items = [
             me.viewerContainer,
@@ -94,20 +90,32 @@ Ext.define('de.edirom.online.view.window.source.SourceView', {
         me.window.on('loadInternalLink', me.loadInternalId, me);
     },
 
-    loadInternalId: function() {
+    getWeightForInternalLink: function(uri, type, id) {
+        var me = this;
+        
+        if(me.uri != uri)
+            return 0;
+            
+        if(type == 'measure' || type == 'zone' || type == 'surface' || type == 'graphic')
+            return 70;
+        
+        return 0;
+    },
+        
+    loadInternalId: function(id, type) {
         var me = this;
 
-        if(me.window.internalIdType == 'measure') {
+        if(type == 'measure') {
             me.window.requestForActiveView(me);
-            me.gotoMeasure(me.window.internalId);
+            me.gotoMeasure(id);
         
-        }else if(me.window.internalIdType == 'zone') {
+        }else if(type == 'zone') {
             me.window.requestForActiveView(me);
-            me.gotoZone(me.window.internalId);
+            me.gotoZone(id);
         
-        }else if(me.window.internalIdType == 'surface' || me.window.internalIdType == 'graphic' ) {
+        }else if(type == 'surface' || type == 'graphic' ) {
             me.window.requestForActiveView(me);
-            me.showPage(me.window.internalId);
+            me.showPage(id);
         }
     },
 
@@ -447,7 +455,7 @@ Ext.define('de.edirom.online.view.window.source.SourceView', {
     gotoMeasureDialog: function() {
         var me = this;
 
-        Ext.create('de.edirom.online.view.window.source.GotoMsg', {
+        Ext.create('EdiromOnline.view.window.source.GotoMsg', {
             movements: me.movements,
             callback: Ext.bind(function(measure, movementId) {
                 this.fireEvent('gotoMeasureByName', this, measure, movementId);
@@ -511,7 +519,7 @@ Ext.define('de.edirom.online.view.window.source.SourceView', {
     }
 });
 
-Ext.define('de.edirom.online.view.window.source.GotoMsg', {
+Ext.define('EdiromOnline.view.window.source.GotoMsg', {
 
     extend: 'Ext.window.Window',
 
