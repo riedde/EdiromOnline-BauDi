@@ -56,7 +56,7 @@ declare function local:getViews($type, $docUri, $doc) {
     
     string-join((
         (: SummaryView :)
-        (:concat("{type:'summaryView',uri:'", $docUri, "'}"),:)
+        concat("{type:'summaryView',uri:'", $docUri, "'}"),
         
         (: HeaderView :)
 (:        if($doc//mei:meiHead or $doc//tei:teiHeader) then(concat("{type:'headerView',uri:'", $docUri, "'}")) else(),:)
@@ -98,8 +98,8 @@ declare function local:getViews($type, $docUri, $doc) {
         (: iFrameView, generic :)
 (:        if($type = 'html') then(concat("{type:'iFrameView', label: '", $doc//head/data(title) ,"' ,uri:'", $docUri, "'}")) else(),:)
         
-       (: (\: XmlView :\)
-        concat("{type:'xmlView',uri:'", $docUri, "'}"),:)
+        (: XmlView :)
+        concat("{type:'xmlView',uri:'", $docUri, "'}"),
 
         (: SourceDescriptionView :)
         if($doc//mei:annot[@type='descLink']) then(concat("{type:'xmlView', label: 'XML Quellenbeschreibung', uri:'", ($doc//mei:annot[@type='descLink'])[1]/@plist, "'}")) else()
