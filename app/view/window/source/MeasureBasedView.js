@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2011 The Edirom Project
+ *  Copyright (C) 2014 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -17,16 +17,13 @@
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-Ext.define('de.edirom.online.view.window.source.MeasureBasedView', {
-    extend: 'Ext.panel.Panel',
+Ext.define('EdiromOnline.view.window.source.MeasureBasedView', {
+    extend: 'EdiromOnline.view.window.View',
     
-    mixins: {
-        observable: 'Ext.util.Observable'
-    },
-
     requires: [
-        'de.edirom.online.view.window.image.ImageViewer',
-        'Ext.selection.CheckboxModel'
+        'EdiromOnline.view.window.image.ImageViewer',
+        'Ext.selection.CheckboxModel',
+        'Ext.layout.container.Border'
     ],
     
     alias : 'widget.measureBasedView',
@@ -37,6 +34,8 @@ Ext.define('de.edirom.online.view.window.source.MeasureBasedView', {
     },
 
     border: 0,
+    
+    cls: 'measureBasedView',
     
     initComponent: function () {
 
@@ -78,14 +77,14 @@ Ext.define('de.edirom.online.view.window.source.MeasureBasedView', {
             }
         });
 
-        me.measureSpinner = Ext.create('de.edirom.online.view.window.source.MeasureSpinner', {
-            width: 111,
+        me.measureSpinner = Ext.create('EdiromOnline.view.window.source.MeasureSpinner', {
+            width: 121,
             cls: 'pageSpinner', //TODO
             owner: me,
             hidden: true
         });
         
-        me.intervalSpinner = Ext.create('de.edirom.online.view.window.source.IntervalSpinner', {
+        me.intervalSpinner = Ext.create('EdiromOnline.view.window.source.IntervalSpinner', {
             value: 1,
             maxValue: 99,
             minValue: 1,
@@ -218,7 +217,7 @@ Ext.define('de.edirom.online.view.window.source.MeasureBasedView', {
                 var viewer = me.viewers.get(voice);
                 
                 if(typeof viewer == 'undefined') {
-                    viewer = Ext.create('de.edirom.online.view.window.source.HorizontalMeasureViewer', {
+                    viewer = Ext.create('EdiromOnline.view.window.source.HorizontalMeasureViewer', {
                         owner: me
                     });
                     
@@ -358,7 +357,7 @@ Ext.define('de.edirom.online.view.window.source.MeasureBasedView', {
     }
 });
 
-Ext.define('de.edirom.online.view.window.source.HorizontalMeasureViewer', {
+Ext.define('EdiromOnline.view.window.source.HorizontalMeasureViewer', {
     extend: 'Ext.panel.Panel',
     
     mixins: {
@@ -398,7 +397,7 @@ Ext.define('de.edirom.online.view.window.source.HorizontalMeasureViewer', {
         me.owner.owner.on('measureVisibilityChange', me.onMeasureVisibilityChange, me);
         me.owner.owner.on('annotationsVisibilityChange', me.onAnnotationsVisibilityChange, me);
         
-        var viewer = Ext.create('de.edirom.online.view.window.image.ImageViewer', {flex: 1});
+        var viewer = Ext.create('EdiromOnline.view.window.image.ImageViewer', {flex: 1});
         viewer.on('imageChanged', me.onViewerImageChange, me);
         
         me.imageViewers = [viewer];
@@ -494,7 +493,7 @@ Ext.define('de.edirom.online.view.window.source.HorizontalMeasureViewer', {
             
             if(typeof me.imageViewers[viewerCount - 1] == 'undefined') {
             
-                var viewer = Ext.create('de.edirom.online.view.window.image.ImageViewer', {flex: 1});
+                var viewer = Ext.create('EdiromOnline.view.window.image.ImageViewer', {flex: 1});
                 viewer.on('imageChanged', me.onViewerImageChange, me);
             
                 me.imageViewers[viewerCount - 1] = viewer;
@@ -597,8 +596,8 @@ Ext.define('de.edirom.online.view.window.source.HorizontalMeasureViewer', {
     }
 });
 
-//TODO: mit de.edirom.online.view.window.source.PageSpinner zusammen legen
-Ext.define('de.edirom.online.view.window.source.MeasureSpinner', {
+//TODO: mit EdiromOnline.view.window.source.PageSpinner zusammen legen
+Ext.define('EdiromOnline.view.window.source.MeasureSpinner', {
     extend: 'Ext.container.Container',
 
     alias : 'widget.measureSpinner',
@@ -694,7 +693,7 @@ Ext.define('de.edirom.online.view.window.source.MeasureSpinner', {
     }
 });
 
-Ext.define('de.edirom.online.view.window.source.IntervalSpinner', {
+Ext.define('EdiromOnline.view.window.source.IntervalSpinner', {
     extend: 'Ext.form.Spinner',
     
     step: 1,

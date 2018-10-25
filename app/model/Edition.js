@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2011 The Edirom Project
+ *  Copyright (C) 2014 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,10 +15,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  ID: $Id: Edition.js 1219 2012-01-20 08:33:28Z daniel $
  */
-Ext.define('de.edirom.online.model.Edition', {
+Ext.define('EdiromOnline.model.Edition', {
 
     requires: [],
 
@@ -51,12 +49,14 @@ Ext.define('de.edirom.online.model.Edition', {
     fetchConcordances: function(workId, fn) {
 
         var me = this;
+        var lang = getPreference('application_language');
 
         window.doAJAXRequest('data/xql/getConcordances.xql',
             'GET', 
             {
                 id: me.get('doc'),
-                workId: workId
+                workId: workId,
+                lang: lang
             },
             function(response){
                 var data = response.responseText;

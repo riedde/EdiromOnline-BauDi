@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2011 The Edirom Project
+ *  Copyright (C) 2014 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,10 +15,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  ID: $Id: Desktop.js 1334 2012-06-14 12:40:33Z daniel $
  */
-Ext.define('de.edirom.online.controller.desktop.Desktop', {
+Ext.define('EdiromOnline.controller.desktop.Desktop', {
 
     extend: 'Ext.app.Controller',
 
@@ -100,9 +98,20 @@ Ext.define('de.edirom.online.controller.desktop.Desktop', {
         this.desktop.switchDesktop(desk);
     },
 
+    cloneWinsCollectionWithoutMinimized: function(wins) {
+        var set = new Ext.util.MixedCollection();
+
+        wins.each(function(win) {
+            if(!win.minimized) set.add(win);
+        });
+
+        return set;
+    },
+
     sortHorizontally: function() {
         var desktop = this.desktop;
         var wins = desktop.getActiveWindowsSet(true);
+        wins = this.cloneWinsCollectionWithoutMinimized(wins);
 
         if(wins == null || wins.length == 0)
 	        return;
@@ -118,7 +127,7 @@ Ext.define('de.edirom.online.controller.desktop.Desktop', {
             var contentConfig = win.getContentConfig();
             
             var to = {
-                y: 30,
+                y: desktop.getTopBarHeight() + 2,
                 x: left + 3,
                 width: w - 6,
                 height: size.height - 4
@@ -139,13 +148,14 @@ Ext.define('de.edirom.online.controller.desktop.Desktop', {
     sortVertically: function() {
         var desktop = this.desktop;
         var wins = desktop.getActiveWindowsSet(true);
+        wins = this.cloneWinsCollectionWithoutMinimized(wins);
 
         if(wins == null || wins.length == 0)
 	        return;
 
         var size = desktop.getUsableSize();
 
-        var top = 30;
+        var top = desktop.getTopBarHeight();
         var n = wins.length;
 		var h = size.height/n;
 
@@ -175,6 +185,7 @@ Ext.define('de.edirom.online.controller.desktop.Desktop', {
     sortGrid: function() {
         var desktop = this.desktop;
         var wins = desktop.getActiveWindowsSet(true);
+        wins = this.cloneWinsCollectionWithoutMinimized(wins);
 
         if(wins == null || wins.length == 0)
             return;
@@ -182,7 +193,7 @@ Ext.define('de.edirom.online.controller.desktop.Desktop', {
         var size = desktop.getUsableSize();
 
         var left = 0;
-        var top = 30;
+        var top = desktop.getTopBarHeight();
 
         var optArray = this.findOptimalLenBrt(wins.length);
 
@@ -215,7 +226,6 @@ Ext.define('de.edirom.online.controller.desktop.Desktop', {
             left = left + (size.width / optArray[0]);
         });
     },
-
     getGridPositioning: function(numWins) {
         var desktop = this.desktop;
         var size = desktop.getUsableSize();
@@ -223,7 +233,7 @@ Ext.define('de.edirom.online.controller.desktop.Desktop', {
         var positions = {};
 
         var left = 0;
-        var top = 0;
+        var top = desktop.getTopBarHeight();
 
         var optArray = this.findOptimalLenBrt(numWins);
 

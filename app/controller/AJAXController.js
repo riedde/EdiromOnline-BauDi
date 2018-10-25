@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2011 The Edirom Project
+ *  Copyright (C) 2014 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  *
  *  ID: $Id$
  */
-Ext.define('de.edirom.online.controller.AJAXController', {
+Ext.define('EdiromOnline.controller.AJAXController', {
 
     extend: 'Ext.app.Controller',
 
@@ -29,6 +29,9 @@ Ext.define('de.edirom.online.controller.AJAXController', {
 
     doAJAXRequest: function(url, method, params, successFn, retryNo) {
         var me = this;
+        
+        var editionId = this.application.activeEdition;
+        params = Ext.applyIf(params, {edition: editionId});
         
         var override = window.getPreference(url, true);
 

@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2011 The Edirom Project
+ *  Copyright (C) 2014 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,24 +15,46 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  ID: $Id: ConcordanceNavigator.js 1289 2012-03-26 13:11:43Z daniel $
  */
-Ext.define('de.edirom.online.controller.window.concordanceNavigator.ConcordanceNavigator', {
+Ext.define('EdiromOnline.controller.window.concordanceNavigator.ConcordanceNavigator', {
 
     extend: 'Ext.app.Controller',
+    
+    navwin: null,
 
     views: [
         'window.concordanceNavigator.ConcordanceNavigator'
     ],
 
     init: function() {
+	    
+	    this.application.addListener('workSelected', this.onWorkSelected, this);
+	    
         this.control({
             'concordanceNavigator': {
                 render: this.onWindowRendered,
                 single: true
             }
         });
+        
+        this.control({
+            'concordanceNavigator': {
+                showConnection: this.onShowConnection
+            }
+        });
+    },
+    
+    onWorkSelected: function(workId) {
+	    //console.log('Werk gewechselt, von Conc registriert!');
+	    //console.log(workId);
+	    
+
+	    var me = this;
+	    if(me.navwin != null) {
+	    	var app = me.application;
+			app.callFunctionOfEdition(me.navwin, 'getConcordances', Ext.bind(me.concordancesLoaded, me, [me.navwin], true));
+		}
+	    
     },
 
     onWindowRendered: function(win) {
@@ -40,8 +62,10 @@ Ext.define('de.edirom.online.controller.window.concordanceNavigator.ConcordanceN
 
         if(win.initialized) return;
         win.initialized = true;
+        
+        this.navwin = win;
 
-        win.on('showConnection', me.onShowConnection, me);
+        //win.on('showConnection', me.onShowConnection, me);
 
         var app = me.application;
         app.callFunctionOfEdition(win, 'getConcordances', Ext.bind(me.concordancesLoaded, me, [win], true));

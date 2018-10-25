@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2011 The Edirom Project
+ *  Copyright (C) 2014 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,10 +15,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  ID: $Id$
  */
-Ext.define('de.edirom.online.controller.PreferenceController', {
+Ext.define('EdiromOnline.controller.PreferenceController', {
 
     extend: 'Ext.app.Controller',
 
@@ -68,7 +66,15 @@ Ext.define('de.edirom.online.controller.PreferenceController', {
 
         if(!me.preferences[key] && lax)
             return null;
-
+        
+        if(key == "application_language") {
+	        var lang = me.getURLParameter("lang");
+	        if(lang) {
+		        return lang;
+	        } else {
+		        return "en";
+	        }
+        }
 
         if(!me.preferences[key]) {
             Ext.Error.raise({
@@ -81,5 +87,11 @@ Ext.define('de.edirom.online.controller.PreferenceController', {
         }
 
         return me.preferences[key];
+    },
+    
+    // copied from Application.js
+    getURLParameter: function(parameter) {
+        return decodeURIComponent((new RegExp('[?|&]' + parameter + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
     }
+
 });

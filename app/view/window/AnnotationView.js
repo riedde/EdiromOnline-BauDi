@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2011 The Edirom Project
+ *  Copyright (C) 2014 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,31 +15,29 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  ID: $Id: AnnotationView.js 1403 2012-08-23 13:01:59Z daniel $
  */
-Ext.define('de.edirom.online.view.window.AnnotationView', {
-    extend: 'Ext.panel.Panel',
+Ext.define('EdiromOnline.view.window.AnnotationView', {
+    extend: 'EdiromOnline.view.window.View',
+    
     cls: 'annotView',
+    
     requires: [
         'Ext.grid.Panel',
-        'Ext.grid.PagingScroller',
+        /*'Ext.grid.PagingScroller',*/
         'Ext.ux.grid.FiltersFeature',
-        'de.edirom.online.model.Annotation',
-        'de.edirom.online.model.AnnotationParticipant',
-        'de.edirom.online.view.utils.Lightbox',
-        'de.edirom.online.view.window.annotationLayouts.AnnotationLayout1',
-        'de.edirom.online.view.window.annotationLayouts.AnnotationLayout2',
-        'de.edirom.online.view.window.annotationLayouts.AnnotationLayout3'
+        'EdiromOnline.model.Annotation',
+        'EdiromOnline.model.AnnotationParticipant',
+        'EdiromOnline.view.utils.Lightbox',
+        'EdiromOnline.view.window.annotationLayouts.AnnotationLayout1',
+        'EdiromOnline.view.window.annotationLayouts.AnnotationLayout2',
+        'EdiromOnline.view.window.annotationLayouts.AnnotationLayout3'
     ],
-
-    mixins: {
-        observable: 'Ext.util.Observable'
-    },
 
     alias : 'widget.annotationView',
 
     layout: 'card',
+    
+    cls: 'annotationView',
 
     initComponent: function () {
 
@@ -62,34 +60,44 @@ Ext.define('de.edirom.online.view.window.AnnotationView', {
                 filters: []
             }],
             columns: [
+// 	            Not needed for RWA
+/*
             	{
                     header: getLangString('view.window.AnnotationView_No'),
                     dataIndex: 'pos',
                     width: 35
                 },
+*/
                 {
                     header: getLangString('view.window.AnnotationView_TitleLabel'),
                     dataIndex: 'title',
-                    flex: 2,
+                    flex: 4,
                     filter: true
                 },
                 {
                     header: getLangString('view.window.AnnotationView_Categories'),
                     dataIndex: 'categories',
-                    flex: 1,
+                    flex: 2,
                     filter: true
                 },
                 {
                     header: getLangString('view.window.AnnotationView_Priority'),
                     dataIndex: 'priority',
-                    hidden: true
+                    flex: 1,
+                    filter: true
+                },
+                {
+                    header: getLangString('view.window.AnnotationView_Sigla'),
+                    dataIndex: 'sigla',
+                    flex: 2,
+                    filter: true
                 }
             ]
         });
 
         me.participantsList = Ext.create('Ext.grid.Panel', {
             store: Ext.create('Ext.data.Store', {
-                model: 'de.edirom.online.model.AnnotationParticipant'
+                model: 'EdiromOnline.model.AnnotationParticipant'
             }),
             title: getLangString('view.window.AnnotationView_Participants'),
             bodyBorder: false,
@@ -160,7 +168,7 @@ Ext.define('de.edirom.online.view.window.AnnotationView', {
         me.singleView.border = 0;
         me.singleView.setPanels(me.contentPanel, me.metaPanel, me.participantsPanel);
 
-        me.bottomBar = new de.edirom.online.view.window.BottomBar({owner:me, region:'south'});
+        me.bottomBar = new EdiromOnline.view.window.BottomBar({owner:me, region:'south'});
 
         me.singlePlusToolbar = Ext.create('Ext.panel.Panel', {
             layout: 'border',
@@ -281,10 +289,10 @@ Ext.define('de.edirom.online.view.window.AnnotationView', {
         var me = this;
 
         me.listStore = Ext.create('Ext.data.Store', {
-            model: 'de.edirom.online.model.Annotation',
+            model: 'EdiromOnline.model.Annotation',
             autoLoad: false
         });
-        me.listStore.getProxy().extraParams = {uri: me.uri};
+        me.listStore.getProxy().extraParams = {uri: me.uri, lang: getPreference('application_language')};
 
         return me.listStore;
     },
@@ -294,12 +302,25 @@ Ext.define('de.edirom.online.view.window.AnnotationView', {
         me.listStore.load();
     },
 
-    loadInternalId: function() {
+    getWeightForInternalLink: function(uri, type, id) {
+        var me = this;
+        
+        if(me.uri != uri)
+            return 0;
+        
+        if(type == 'annot') {
+            return 70;
+        }
+        
+        return 0;
+    },
+    
+    loadInternalId: function(id, type) {
         var me = this;
 
-        if(me.window.internalIdType == 'annot') {
+        if(type == 'annot') {
             me.window.requestForActiveView(me);
-            me.showSingleAnnotation(me.window.internalId);
+            me.showSingleAnnotation(id);
         }
     },
 
@@ -402,7 +423,7 @@ Ext.define('de.edirom.online.view.window.AnnotationView', {
     imgClicked: function(e, elem, obj) {
 
         var me = this;
-        var lightbox = new de.edirom.online.view.utils.Lightbox();
+        var lightbox = new EdiromOnline.view.utils.Lightbox();
         lightbox.init(elem);
     },
 
@@ -458,12 +479,13 @@ Ext.define('de.edirom.online.view.window.AnnotationView', {
             var page = participant['page'];
             var source = participant['source'];
             var siglum = participant['siglum'];
+            var part = participant['part'];
             var digilibBaseParams = participant['digilibBaseParams'];
             var digilibSizeParams = participant['digilibSizeParams'];
             var hiddenData = participant['hiddenData'];
             var content = participant['content'];
 
-            label = (siglum == ''?source:siglum) + ": " + label;
+            label = (siglum == ''?source:siglum) + (part == ''?'':', '+part);//  + ": " + label;
 
             if(type == 'text') {
 
@@ -560,7 +582,7 @@ Ext.define('de.edirom.online.view.window.AnnotationView', {
             var hiddenData = participant['hiddenData'];
             var content = participant['content'];
 
-            label = (siglum == ''?source:siglum) + ": " + label;
+            label = (siglum == ''?source:siglum);//  + ": " + label;
 
             var shape = null;
 
@@ -575,13 +597,12 @@ Ext.define('de.edirom.online.view.window.AnnotationView', {
 
             shape.on('dblclick', me.participantClickedSingle, me, {prevView: prevView});
 
-            /*
             var stepLeft = shape.query('div.stepLeft')[0];
             stepLeft.on('click', me.previousParticipantSingle, me);
 
             var stepRight = shape.query('div.stepRight')[0];
             stepRight.on('click', me.nextParticipantSingle, me);
-            */
+            
         }
 
         me.calculateLimitingImageFactor();

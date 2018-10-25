@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2011 The Edirom Project
+ *  Copyright (C) 2014 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,15 +15,9 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  ID: $Id: TextView.js 1334 2012-06-14 12:40:33Z daniel $
  */
-Ext.define('de.edirom.online.view.window.text.TextView', {
-    extend: 'Ext.panel.Panel',
-
-    mixins: {
-        observable: 'Ext.util.Observable'
-    },
+Ext.define('EdiromOnline.view.window.text.TextView', {
+    extend: 'EdiromOnline.view.window.View',
 
     requires: [
     ],
@@ -31,6 +25,8 @@ Ext.define('de.edirom.online.view.window.text.TextView', {
     alias : 'widget.textView',
 
     layout: 'fit',
+    
+    cls: 'textView',
 
     annotationsVisible: false,
     annotationsLoaded: false,
@@ -339,8 +335,18 @@ Ext.define('de.edirom.online.view.window.text.TextView', {
     },
 
     setContent: function(text) {
-        Ext.fly(this.id + '_textCont').update(text);
-        this.fireEvent('documentLoaded', this);
+        var me = this;
+		
+		Ext.fly(me.id + '_textCont').update(text);
+		this.fireEvent('documentLoaded', me);
+		
+		Tipped.create('#' + me.id + '_textCont .tipped', { position: 'top', maxWidth: 300 });
+		
+		Ext.Array.each(Ext.query('.scrollto'), function(dom, n, all) {
+            var elem = Ext.get(dom);
+            var scrollTo = elem.getAttribute('data-footnote');
+            elem.on('click', Ext.bind(me.scrollToId, me, [scrollTo]));
+        }, me);
     },
 
     setChapters: function(chapters) {
@@ -351,6 +357,7 @@ Ext.define('de.edirom.online.view.window.text.TextView', {
         me.gotoMenu =  Ext.create('Ext.button.Button', {
             text: getLangString('view.window.text.TextView_gotoMenu'),
             indent: false,
+            cls: 'menuButton',
             menu : {
                 items: [
                 ]
@@ -368,13 +375,13 @@ Ext.define('de.edirom.online.view.window.text.TextView', {
             });
         });
 
-        me.gotoMenu.menu.add({
+        me.gotoMenu.menu.add(chapterItems/*{
             id: me.id + '_gotoChapter',
             text: getLangString('view.window.text.TextView_gotoChapter'),
             menu: {
                 items: chapterItems
             }
-        });
+        }*/);
 
         me.gotoMenu.show();
     },
@@ -383,10 +390,22 @@ Ext.define('de.edirom.online.view.window.text.TextView', {
         this.fireEvent('gotoChapter', this, chapterId);
     },
 
-    loadInternalId: function() {
-        var me = this;
+    getWeightForInternalLink: function (uri, type, id) {
+		var me = this;
+		
+		if (me.uri != uri)
+		return 0;
+		
+		if (type == 'unknown' || type == 'graphic' || type == 'surface' || type == 'zone')
+		return 0;
+		
+		return 70;
+	},
+	
+	loadInternalId: function (internalId, internalIdType) {
+		var me = this;
 
-        var container = Ext.fly(this.id + '_textCont');
+        var container = Ext.fly(me.id + '_textCont');
         var elem = container.getById(me.id + '_' + me.window.internalId);
         if(elem) {
             me.window.requestForActiveView(me);
@@ -395,39 +414,19 @@ Ext.define('de.edirom.online.view.window.text.TextView', {
     },
 
     scrollToId: function(id) {
-        /* copied from Ext.Element */
-        var container = Ext.fly(this.id + '_textCont');
-        var elem = container.getById(this.id + '_' + id);
-        container = container.dom;
+        
+        var elem = Ext.get(this.id + '_' + id);
 
-        var el = elem.dom,
-            offsets = elem.getOffsetsTo(container),
-            // el's box
-            left = offsets[0] + container.scrollLeft,
-            top = offsets[1] + container.scrollTop,
-            bottom = top + el.offsetHeight,
-            right = left + el.offsetWidth,
-            // ct's box
-            ctClientHeight = container.clientHeight,
-            ctScrollTop = parseInt(container.scrollTop, 10),
-            ctScrollLeft = parseInt(container.scrollLeft, 10),
-            ctBottom = ctScrollTop + ctClientHeight,
-            ctRight = ctScrollLeft + container.clientWidth;
+        var showHide = !elem.isVisible();
 
-        container.scrollTop = top;
-        // corrects IE, other browsers will ignore
-        container.scrollTop = container.scrollTop;
-
-        if (el.offsetWidth > container.clientWidth || left < ctScrollLeft) {
-            container.scrollLeft = left;
-        }
-        else if (right > ctRight) {
-            container.scrollLeft = right - container.clientWidth;
-        }
-        container.scrollLeft = container.scrollLeft;
-    },
-    
-    getContentConfig: function() {
+        if(showHide) elem.show();
+        
+        Ext.getDom(elem).scrollIntoView(true);
+        
+        if(showHide) elem.hide();
+	},
+	
+	getContentConfig: function() {
         var me = this;
         return {
             id: this.id

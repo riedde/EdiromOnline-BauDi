@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2011 The Edirom Project
+ *  Copyright (C) 2014 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,19 +15,20 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  ID: $Id: TopBar.js 1455 2012-10-11 10:42:55Z daniel $
  */
-Ext.define('de.edirom.online.view.desktop.TopBar', {
+Ext.define('EdiromOnline.view.desktop.TopBar', {
     extend: 'Ext.toolbar.Toolbar',
 
     requires: [
-        'Ext.button.Split'
+        'Ext.button.Split',
+        'Ext.form.field.Text'
     ],
 
     alias : 'widget.topbar',
 	id : 'ediromToolbar',
 	
+    height: 41,
+
     initComponent: function () {
 
         var me = this;
@@ -35,23 +36,24 @@ Ext.define('de.edirom.online.view.desktop.TopBar', {
         me.homeButton = Ext.create('Ext.button.Button', {
             id: 'homeBtn',
             cls: 'taskSquareButton home',
-            tooltip: { text: getLangString('view.desktop.TaskBar_home'), align: 'bl-tl' }//,
-            //handler: Ext.bind(me.fireEvent, me, ['openConcordanceNavigator'], false)
+            tooltip: { text: getLangString('view.desktop.TaskBar_home'), align: 'tl-bl' }
         });
-
+        
         me.workCombo = Ext.create('Ext.button.Button', {
-            text: 'Werk',
+            text: 'work',
             id: 'workSwitch',
             cls: 'insetButton',
             indent: false,
             menu : {
+	            maxHeight:500,
                 items: []
             }
         });
 
         me.searchButton = Ext.create('Ext.button.Button', {
+            id: 'searchBtn',
             cls: 'taskSquareButton search',
-            tooltip: { text: getLangString('view.desktop.TaskBar_search'), align: 'tr-bl' },
+            tooltip: { text: getLangString('view.desktop.TaskBar_search'), align: 'tl-bl' },
             action: 'openSearchWindow'
         });
 
@@ -67,11 +69,20 @@ Ext.define('de.edirom.online.view.desktop.TopBar', {
                 flex: 1,
                 cls: 'ux-desktop-topbar-flex',
                 items: [
-                    me.homeButton,
-                    this.workCombo,
-                    '->',
-                    //me.searchTextField,
-                    me.searchButton
+                		me.homeButton,
+						{ xtype: 'tbtext', text: 'Baumann Digital', id: 'homeBtnLabel' },
+						this.workCombo,
+						{
+							xtype: 'splitter',
+							html: '&#160;',
+							height: 14,
+							width: 2, // TODO - there should be a CSS way here
+							cls: 'x-toolbar-separator x-toolbar-separator-horizontal ediTopBarSep'
+            			},
+                    	me.workCombo,
+                    	'->',
+// 						me.searchTextField,
+                    	me.searchButton
                 ]
             })
         ];
