@@ -27,7 +27,7 @@ Ext.define('EdiromOnline.view.window.XmlView', {
     layout: 'fit',
     cls: 'xmlView',
 
-    editor: ace,
+    editor: null,
 
     initComponent: function () {
 
@@ -48,9 +48,9 @@ Ext.define('EdiromOnline.view.window.XmlView', {
         this.editor = ace.edit(this.id + '_editor');
         this.editor.getSession().setMode(new XmlMode());
         this.editor.getSession().setUseWrapMode(false);       //bisher keine funktionale Änderung festgestellt
-        this.editor.setShowPrintMargin(true);
-        this.editor.renderer.setHScrollBarAlwaysVisible(true);
-        this.editor.setReadOnly(false);  // false for the editable
+        this.editor.setShowPrintMargin(false);
+        this.editor.renderer.setHScrollBarAlwaysVisible(false);
+        this.editor.setReadOnly(true);  // false for the editable
     },
 
     createToolbarEntries: function() {
