@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,8 +15,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  ID: $Id: TopBar.js 1344 2012-06-22 15:00:14Z daniel $
  */
-Ext.define('EdiromOnline.view.window.TopBar', {
+Ext.define('de.edirom.online.view.window.TopBar', {
     extend: 'Ext.toolbar.Toolbar',
 
     requires: [
@@ -173,8 +175,6 @@ Ext.define('EdiromOnline.view.window.TopBar', {
         //this.window.helpPanel.isHidden();
 
     },
-    
-    //TODO
     printButton: function(){
         window.open('http://localhost:8089/edirompub/data/xql/edirom_printPreview.xql?&uri=' + this.window.uri + '&type=' + this.window.type);
     }

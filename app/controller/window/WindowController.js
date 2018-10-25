@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,13 +15,14 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  ID: $Id: WindowController.js 1343 2012-06-22 14:58:42Z daniel $
  */
-Ext.define('EdiromOnline.controller.window.WindowController', {
+Ext.define('de.edirom.online.controller.window.WindowController', {
 
     extend: 'Ext.app.Controller',
 
     requires: [
-        'EdiromOnline.view.window.Window'
     ],
 
     init: function() {
@@ -44,7 +45,7 @@ Ext.define('EdiromOnline.controller.window.WindowController', {
             uri: uri
         });
 
-        var win = new EdiromOnline.view.window.Window(config);
+        var win = new de.edirom.online.view.window.Window(config);
         this.application.getController('desktop.Desktop').addWindowToActiveDesktop(win);
         win.show();
         

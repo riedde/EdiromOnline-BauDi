@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,8 +15,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  ID: $Id: ImageViewer.js 1455 2012-10-11 10:42:55Z daniel $
  */
-Ext.define('EdiromOnline.view.window.image.ImageViewer', {
+Ext.define('de.edirom.online.view.window.image.ImageViewer', {
     extend: 'Ext.panel.Panel',
 
     mixins: {
@@ -42,8 +44,8 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     imgWidth: 0,
     imgHeight: 0,
 
-    imgPrefix: null,
-    
+    imgPrefix: '../../../digilib/Scaler/',
+
     shapes: null,
     shapesHidden: false,
 
@@ -59,16 +61,14 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     initComponent: function () {
 
         var me = this;
-        
-        me.imgPrefix = getPreference('image_prefix');
-        
+
         me.addEvents('zoomChanged',
                     'imageChanged');
 
-        me.html = '<div id="' + me.id + '_facsCont" style="overflow: hidden; background-color: black; top:0px; bottom: 0px; left: 0px; right: 0px; position:absolute;"></div>' +
+        me.html = '<div id="' + me.id + '_facsCont" style="background-color: black; top:0px; bottom: 0px; left: 0px; right: 0px; position:absolute;"></div>' +
                   '<div id="' + me.id + '_facsContEvents" class="facsContEvents"></div>';
 
-        me.imageLoader = new EdiromOnline.view.window.image.ImageLoader({
+        me.imageLoader = new de.edirom.online.view.window.image.ImageLoader({
             viewer: me
         });
 
@@ -116,20 +116,11 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
 
     clear: function() {
         var me = this;
-        //console.log("clear");
-        //console.log(me.shapes);
 
         // remove all shapes
-        var keys = [];
-        me.shapes.eachKey(function(key) {
-	       keys.push(key); 
-        });
-        
-        for(var i = 0; i < keys.length; i++) {
-	        var groupName = keys[i];
-	        //console.log(groupName);
+        me.shapes.eachKey(function(groupName) {
             me.removeShapes(groupName);
-        };
+        });
 
         me.svgOverlays.each(function(svg) {
            svg.destroy();
@@ -214,17 +205,18 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
                 });
 
                 tip.on('afterrender', function() {
-                    window.doAJAXRequest('data/xql/getAnnotation.xql',
-                        'GET', 
-                        {
+                    Ext.Ajax.request({
+                        url: 'data/xql/getAnnotation.xql',
+                        method: 'GET',
+                        params: {
                             uri: uri,
-                            target: 'tip',
-                            lang: getPreference('application_language')
+                            target: 'tip'
                         },
-                        Ext.bind(function(response){
+                        success: function(response){
                             this.update(response.responseText);
-                        }, this)
-                    );
+                        },
+                        scope: this
+                    });
                 }, tip);
             });
         });
@@ -415,7 +407,6 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     },
 
     removeShapes: function(groupName) {
-	    //console.log("removeShape: " + groupName)
         var me = this;
         var shapeDiv = me.el.getById(me.id + '_facsContEvents');
 
@@ -430,7 +421,7 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
             }catch(e) {
                 id = shape.id;
             }
-			//console.log(shapeDiv.getById(me.id + '_' + id));
+
             Ext.removeNode(shapeDiv.getById(me.id + '_' + id).dom);
         };
 
@@ -773,7 +764,7 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     }
 });
 
-Ext.define('EdiromOnline.view.window.image.ImageLoader', {
+Ext.define('de.edirom.online.view.window.image.ImageLoader', {
 
     queue: [],
     img: null,

@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,8 +15,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  ID: $Id: AnnotationView.js 1298 2012-04-27 15:17:35Z daniel $
  */
-Ext.define('EdiromOnline.controller.window.AnnotationView', {
+Ext.define('de.edirom.online.controller.window.AnnotationView', {
 
     extend: 'Ext.app.Controller',
 
@@ -51,15 +53,11 @@ Ext.define('EdiromOnline.controller.window.AnnotationView', {
 
     onShowAnnotation: function(view, uri) {
 
-        var editionId = this.application.activeEdition;
-        var lang = getPreference('application_language');
-    
         Ext.Ajax.request({
             url: 'data/xql/getAnnotationText.xql',
             method: 'GET',
             params: {
-                uri: uri,
-                lang: lang
+                uri: uri
             },
             success: function(response){
                 view.setContent(response.responseText);
@@ -71,8 +69,7 @@ Ext.define('EdiromOnline.controller.window.AnnotationView', {
             url: 'data/xql/getAnnotationMeta.xql',
             method: 'GET',
             params: {
-                uri: uri,
-                lang: lang
+                uri: uri
             },
             success: function(response){
                 view.setMeta(response.responseText);
@@ -83,9 +80,7 @@ Ext.define('EdiromOnline.controller.window.AnnotationView', {
         window.doAJAXRequest('data/xql/getAnnotationPreviews.xql',
             'GET', 
             {
-                uri: uri,
-                edition: editionId,
-                lang: lang
+                uri: uri
             },
             Ext.bind(function(response){
                 var data = Ext.JSON.decode(response.responseText);

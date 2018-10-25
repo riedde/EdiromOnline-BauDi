@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,8 +15,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  ID: $Id: TextView.js 1279 2012-03-19 13:16:43Z daniel $
  */
-Ext.define('EdiromOnline.controller.window.text.TextView', {
+Ext.define('de.edirom.online.controller.window.text.TextView', {
 
     extend: 'Ext.app.Controller',
 

@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,8 +15,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  ID: $Id: Window.js 1405 2012-08-24 12:52:56Z daniel $
  */
-Ext.define('EdiromOnline.view.window.Window', {
+Ext.define('de.edirom.online.view.window.Window', {
 
     mixins: {
         observable: 'Ext.util.Observable'
@@ -28,8 +30,8 @@ Ext.define('EdiromOnline.view.window.Window', {
 
     requires: [
         'Ext.layout.container.Card',
-        'EdiromOnline.view.window.TopBar',
-        'EdiromOnline.view.window.BottomBar'
+        'de.edirom.online.view.window.TopBar',
+        'de.edirom.online.view.window.BottomBar'
     ],
 
     stateful: false,
@@ -51,7 +53,7 @@ Ext.define('EdiromOnline.view.window.Window', {
 
         this.addEvents('viewSwitched', 'loadInternalLink');
 
-        this.tbar = this.topbar = new EdiromOnline.view.window.TopBar(this.getTopbarConfig());
+        this.tbar = this.topbar = new de.edirom.online.view.window.TopBar(this.getTopbarConfig());
 
         /* {id: id, label: label, view: view} */
         this.views = new Array();
@@ -66,9 +68,6 @@ Ext.define('EdiromOnline.view.window.Window', {
 
     setWindowConfig: function(config) {
         var me = this;
-
-		//console.log("setWindowConfig");
-		//console.log(config);
 
         me.setTitle(config['title'] || getLangString('global_unknown'));
         Ext.apply(me, config);
@@ -94,7 +93,48 @@ Ext.define('EdiromOnline.view.window.Window', {
 
     onWindowFinishedRendering: function() {
         var me = this;
-        me.loadInternalId(me.internalId, me.internalIdType, true);
+
+        var viewToShow = me.views[0].view;
+        
+        //console.log(me.doc + " " + me.internalIdType + " " + me.internalId);
+
+        for(var i = 0; i < me.views.length; i++) {
+            var view = me.views[i].view;
+            
+            //console.log(view.viewType + " " + view.uri);
+
+            /*if(view.viewType == 'textView' && view.uri.match(/#.+$/))
+                view.on('show', Ext.bind(view.scrollToId, view, [view.uri], false), view);*/
+
+            if(me.internalIdType == 'unknown' && view.defaultView)
+                viewToShow = view;
+
+            else if(me.internalIdType == 'note' && view.viewType == 'textView' && view.uri == me.doc) {
+                view.on('documentLoaded', Ext.bind(view.scrollToId, view, [me.internalId], false), view);
+                viewToShow = view;
+
+            }else if(me.internalIdType == 'annot' && view.viewType == 'annotationView') {
+                view.on('show', Ext.bind(view.showSingleAnnotation, view, [me.internalId], false), view);
+                viewToShow = view;
+
+            }else if(me.internalIdType == 'zone' && view.viewType == 'sourceView') {
+                view.on('show', Ext.bind(view.gotoZone, view, [me.internalId], false), view);
+                viewToShow = view;
+
+            }else if(me.internalIdType == 'measure' && view.viewType == 'sourceView') {
+                view.on('show', Ext.bind(view.gotoMeasure, view, [me.internalId], false), view);
+                viewToShow = view;
+
+            }else if((me.internalIdType == 'surface' || me.internalIdType == 'graphic') && view.viewType == 'sourceView') {
+                view.on('show', Ext.bind(view.showPage, view, [me.internalId], false), view);
+                viewToShow = view;
+            
+            }else if(view.defaultView) {
+                viewToShow = view;
+            }
+        }
+        
+        me.requestForActiveView(viewToShow);
     },
 
     getTopbarConfig: function () {
@@ -139,84 +179,13 @@ Ext.define('EdiromOnline.view.window.Window', {
         return this.getLayout().getActiveItem();
     },
 
-    loadInternalId: function(internalId, internalIdType, ignoreActiveView) {
+    loadInternalId: function(internalId, internalIdType) {
 
         var me = this;
         me.internalId = internalId;
         me.internalIdType = internalIdType;
 
-        var viewWeights = Ext.create('Ext.data.Store', {
-            fields: [
-                {name: 'view', type: 'object'},
-                {name: 'weight', type: 'int'}
-             ]
-        });
-        
-        for(var i = 0; i < me.views.length; i++) {
-            var view = me.views[i].view;
-            var weight = view.getWeightForInternalLink(me.doc, me.internalIdType, me.internalId);
-            
-            if(view.defaultView)
-                weight += 5;
-                
-            if((typeof ignoreActiveView === 'undefined' || !ignoreActiveView) && me.getActiveView() == view)
-                weight += 30;
-            
-            viewWeights.add({view: view, weight: weight});
-            
-            /*
-            if(me.internalIdType == 'unknown' && view.defaultView)
-                viewToShow = view;
-
-            else if(me.internalIdType == 'note' && view.viewType == 'textView' && view.uri == me.doc) {
-                view.on('documentLoaded', Ext.bind(view.scrollToId, view, [me.internalId], false), view);
-                viewToShow = view;
-
-            }else if(me.internalIdType == 'annot' && view.viewType == 'annotationView') {
-                view.on('show', Ext.bind(view.showSingleAnnotation, view, [me.internalId], false), view);
-                viewToShow = view;
-
-            }else if(me.internalIdType == 'zone' && view.viewType == 'sourceView') {
-                view.on('show', Ext.bind(view.gotoZone, view, [me.internalId], false), view);
-                viewToShow = view;
-
-            }else if(me.internalIdType == 'measure' && view.viewType == 'sourceView') {
-                view.on('show', Ext.bind(view.gotoMeasure, view, [me.internalId], false), view);
-                viewToShow = view;
-
-            }else if((me.internalIdType == 'surface' || me.internalIdType == 'graphic') && view.viewType == 'sourceView') {
-                view.on('show', Ext.bind(view.showPage, view, [me.internalId], false), view);
-                viewToShow = view;
-            
-            }else if(view.defaultView) {
-                viewToShow = view;
-            }
-            */
-        }
-        
-        viewWeights.sort('weight', 'DESC');
-            
-        var viewToShow = viewWeights.first().get('view');
-        if (typeof viewToShow === 'undefined')
-            viewToShow = me.views[0].view;
-
-        if(viewToShow.isVisible()) {
-            me.requestForActiveView(viewToShow);
-            viewToShow.loadInternalId(me.internalId, me.internalIdType);            
-        }else {
-            me.requestForActiveView(viewToShow);
-            Ext.defer(me.callInternalLinkWhenVisible, 1000, me, [viewToShow, me.internalId, me.internalIdType, 0]);
-        }
-        
-    },
-    callInternalLinkWhenVisible: function(view, id, type, n) {
-        var me = this;
-        
-        if(view.isVisible()) {
-            view.loadInternalId(id, type);
-        }else if(n < 5){
-            Ext.defer(me.callInternalLinkWhenVisible, 500, me, [view, id, type, n++]);
-        }
+        me.fireEvent('loadInternalLink');
     },
     
     getContentConfig: function() {

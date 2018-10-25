@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,9 +15,11 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  ID: $Id: XmlView.js 1228 2012-01-20 17:20:51Z daniel $
  */
-Ext.define('EdiromOnline.view.window.XmlView', {
-    extend: 'EdiromOnline.view.window.View',
+Ext.define('de.edirom.online.view.window.XmlView', {
+    extend: 'Ext.panel.Panel',
 
     requires: [
     ],
@@ -39,11 +41,12 @@ Ext.define('EdiromOnline.view.window.XmlView', {
 
         this.callParent();
 
+        this.on('afterlayout', this.initXmlView, this, {single: true});
         this.on('afterrender', this.createToolbarEntries, this, {single: true});
     },
 
     initXmlView: function() {
-        var XmlMode = ace.require("ace/mode/xml").Mode;
+        var XmlMode = require("ace/mode/xml").Mode;
 
         this.editor = ace.edit(this.id + '_editor');
         this.editor.getSession().setMode(new XmlMode());

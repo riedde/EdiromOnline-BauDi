@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-Ext.define('EdiromOnline.controller.window.source.MeasureBasedView', {
+Ext.define('de.edirom.online.controller.window.source.MeasureBasedView', {
 
     extend: 'Ext.app.Controller',
 
@@ -160,14 +160,14 @@ Ext.define('EdiromOnline.controller.window.source.MeasureBasedView', {
         var me = this;
         
         if(visible) {
-            window.doAJAXRequest('data/xql/getAnnotationsOnPage.xql',
-                'GET', 
-                {
+            Ext.Ajax.request({
+                url: 'data/xql/getAnnotationsOnPage.xql',
+                method: 'GET',
+                params: {
                     uri: uri,
                     pageId: pageId
                 },
-                Ext.bind(function(response){
-                    var me = this;
+                success: function(response){
                     var data = response.responseText;
 
                     var annotations = Ext.create('Ext.data.Store', {
@@ -176,8 +176,8 @@ Ext.define('EdiromOnline.controller.window.source.MeasureBasedView', {
                     });
 
                     me.annotationsLoaded(annotations, viewer, pageId, sourceView);
-                }, this)
-            );
+                }
+            });
         }else {
             viewer.removeShapes('annotations');
         }

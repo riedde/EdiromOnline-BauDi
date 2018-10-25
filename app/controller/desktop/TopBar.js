@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,8 +15,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  ID: $Id: TopBar.js 1246 2012-01-30 16:51:51Z daniel $
  */
-Ext.define('EdiromOnline.controller.desktop.TopBar', {
+Ext.define('de.edirom.online.controller.desktop.TopBar', {
 
     extend: 'Ext.app.Controller',
 
@@ -30,14 +32,12 @@ Ext.define('EdiromOnline.controller.desktop.TopBar', {
 
         this.control({
             'topbar': {
-                afterrender: this.onTopbarRendered
+                render: this.onTopbarRendered
             }
         });
     },
 
     onTopbarRendered: function(topbar) {
-
-        this.topbar = topbar;
 
         this.works = Ext.getStore('Works');
         this.works.on('load', function() {
@@ -47,6 +47,7 @@ Ext.define('EdiromOnline.controller.desktop.TopBar', {
         if(!this.works.isLoading())
             this.createWorkMenu();
 
+        this.topbar = topbar;
     },
 
     createWorkMenu: function() {
@@ -66,7 +67,7 @@ Ext.define('EdiromOnline.controller.desktop.TopBar', {
                 text: work.get('title'),
                 checkHandler: Ext.bind(me.setSelectedWork, me, [me.topbar, workId], true)
             });
-            
+
             if(active) me.topbar.workCombo.setText(work.get('title'));
         }, me);
     },

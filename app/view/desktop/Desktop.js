@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,24 +15,29 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  ID: $Id: Desktop.js 1347 2012-06-25 14:55:54Z daniel $
  */
- 
-/*
- * Based on Ext.ux.desktop.Desktop
- */
-Ext.define('EdiromOnline.view.desktop.Desktop', {
+Ext.define('de.edirom.online.view.desktop.Desktop' ,{
+
     extend: 'Ext.panel.Panel',
 
     alias: 'widget.desktop',
 
     uses: [
-        'EdiromOnline.view.navigator.Navigator',
-        
         'Ext.util.MixedCollection',
         'Ext.menu.Menu',
         'Ext.window.Window',
 
-        'Ext.ux.desktop.Wallpaper'
+        'de.edirom.online.view.desktop.TaskBar',
+        'de.edirom.online.view.desktop.TopBar',
+        'de.edirom.online.view.navigator.Navigator',
+
+        'de.edirom.online.view.window.concordanceNavigator.ConcordanceNavigator',
+        'de.edirom.online.view.window.HelpWindow',
+        'de.edirom.online.view.window.search.SearchWindow',
+
+        'Ext.ux.desktop.FitAllLayout'
     ],
 
     activeWindowCls: 'ux-desktop-active-win',
@@ -43,16 +48,18 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
 
     border: false,
     html: '&#160;',
-    layout: 'fit',
+    layout: 'fitall',
 
     xTickSize: 1,
     yTickSize: 1,
 
     app: null,
 
+    /**
+     * @cfg {Object} taskbarConfig
+     * The config object for the TaskBar.
+     */
     taskbarConfig: null,
-    
-    topbarConfig: null,
 
     windowMenu: null,
 
@@ -64,12 +71,15 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
         me.windowMenu = new Ext.menu.Menu(me.createWindowMenu());
         me.windowMenu.addCls('taskbarMenu');
 
-        me.bbar = me.taskbar = new EdiromOnline.view.desktop.TaskBar(me.taskbarConfig);
+        me.bbar = me.taskbar = new de.edirom.online.view.desktop.TaskBar(me.getTaskbarConfig());
         me.taskbar.windowMenu = me.windowMenu;
 
-        me.tbar = me.topbar = new EdiromOnline.view.desktop.TopBar(me.topbarConfig);
+        me.tbar = me.topbar = new de.edirom.online.view.desktop.TopBar(me.getTopbarConfig());
 
-        me.navigator = new EdiromOnline.view.navigator.Navigator(me.getNavigatorConfig());
+        me.navigator = new de.edirom.online.view.navigator.Navigator(me.getNavigatorConfig());
+
+        me.items = [
+        ];
 
         me.windows = {
             desktop1: new Ext.util.MixedCollection(),
@@ -77,39 +87,26 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
             desktop3: new Ext.util.MixedCollection(),
             desktop4: new Ext.util.MixedCollection()
         };
-        
         me.contextMenu = new Ext.menu.Menu(me.createDesktopMenu());
 
-        me.items = [
-            { xtype: 'wallpaper', id: me.id+'_wallpaper' }
-        ];
-
         me.callParent();
-
-        var wallpaper = me.wallpaper;
-        me.wallpaper = me.items.getAt(0);
-        if (wallpaper) {
-            me.setWallpaper(wallpaper, me.wallpaperStretch);
-        }
     },
 
     afterRender: function () {
         var me = this;
         me.callParent();
-        
-        //TODO
-        /*me.on({
+
+        /* adding event handlers */
+        me.on({
             resize: me.onResize,
             scope: me
-        });*/
+        });
         me.el.on('contextmenu', me.onDesktopMenu, me);
-        
+
         me.navigator.show();
         me.setNavigatorPosition();
     },
-    
-    //------------------------------------------------------
-    // Edirom Online functions
+
     switchDesktop: function(desk) {
         var me = this;
 
@@ -132,21 +129,19 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
         var nav = null;
 
         me.getActiveWindowsSet().each(function(win) {
-            if(Ext.getClassName(win) == 'EdiromOnline.view.window.concordanceNavigator.ConcordanceNavigator')
+            if(Ext.getClassName(win) == 'de.edirom.online.view.window.concordanceNavigator.ConcordanceNavigator')
                 nav = win;
         });
 
         if(nav == null) {
-            nav = new EdiromOnline.view.window.concordanceNavigator.ConcordanceNavigator();
-            
-            var bodyHeight = me.body.getHeight(true) - 70;
+            nav = new de.edirom.online.view.window.concordanceNavigator.ConcordanceNavigator();
             
             var x = me.body.getWidth(true) - nav.width - 5;
             var y = me.navigator.getHeight() + 10;
             
-            if(bodyHeight - nav.height < y) {
+            if(me.body.getHeight(true) - nav.height < y) {
                 x = me.body.getWidth(true) - me.navigator.getWidth() - nav.width - 10;
-                y = bodyHeight - nav.height - 5;
+                y = me.body.getHeight(true) - nav.height - 5;
             }
             
             Ext.apply(nav, {y: y, x: x});           
@@ -167,12 +162,12 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
         var help = null;
 
         me.getActiveWindowsSet().each(function(win) {
-            if(Ext.getClassName(win) == 'EdiromOnline.view.window.HelpWindow')
+            if(Ext.getClassName(win) == 'de.edirom.online.view.window.HelpWindow')
                 help = win;
         });
 
         if(help == null) {
-            help = Ext.create('EdiromOnline.view.window.HelpWindow', me.getSizeAndPosition(500, 400));
+            help = Ext.create('de.edirom.online.view.window.HelpWindow', me.getSizeAndPosition(500, 400));
             me.addWindow(help);
             help.show();
 
@@ -189,12 +184,12 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
         var win = null;
 
         me.getActiveWindowsSet().each(function(window) {
-            if(Ext.getClassName(window) == 'EdiromOnline.view.window.search.SearchWindow')
+            if(Ext.getClassName(window) == 'de.edirom.online.view.window.search.SearchWindow')
                 win = window;
         });
 
         if(win == null) {
-            win = Ext.create('EdiromOnline.view.window.search.SearchWindow', me.getSizeAndPosition(700, 600));
+            win = Ext.create('de.edirom.online.view.window.search.SearchWindow', me.getSizeAndPosition(700, 600));
             me.addWindow(win);
             win.show();
 
@@ -241,11 +236,11 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
 
         this.windows['desktop' + this.activeDesktop].each(function(win) {
 
-            if(Ext.getClassName(win) == 'EdiromOnline.view.window.concordanceNavigator.ConcordanceNavigator')
+            if(Ext.getClassName(win) == 'de.edirom.online.view.window.concordanceNavigator.ConcordanceNavigator')
                 ;
-            else if(Ext.getClassName(win) == 'EdiromOnline.view.window.HelpWindow')
+            else if(Ext.getClassName(win) == 'de.edirom.online.view.window.HelpWindow')
                 ;
-            else if(Ext.getClassName(win) == 'EdiromOnline.view.window.search.SearchWindow')
+            else if(Ext.getClassName(win) == 'de.edirom.online.view.window.search.SearchWindow')
                 ;
             else
                 set.add(win);
@@ -296,18 +291,12 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
         var height = me.body.getHeight(true);
 
         width -= me.navigator.getWidth();
-        height -= 10;
 
         return {
             width: width,
             height: height
         };
     },
-    
-    getTopBarHeight: function() {
-        return this.topbar.getHeight();
-    },
-    
 
     //------------------------------------------------------
     // Overrideable configuration creation methods
@@ -321,12 +310,9 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
             ret.items.push('-');
         }
 
-        //TODO
-        /*
         ret.items.push(
                 { text: getLangString('view.desktop.Desktop_Tile'), handler: me.tileWindows, scope: me, minWindows: 1 },
                 { text: getLangString('view.desktop.Desktop_Cascade'), handler: me.cascadeWindows, scope: me, minWindows: 1 })
-                */
 
         return ret;
     },
@@ -359,14 +345,11 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
     onDesktopMenu: function (e) {
         var me = this, menu = me.contextMenu;
         e.stopEvent();
-        //TODO
-        /*
         if (!menu.rendered) {
             menu.on('beforeshow', me.onDesktopMenuBeforeShow, me);
         }
         menu.showAt(e.getXY());
         menu.doConstrain();
-        */
     },
 
     onDesktopMenuBeforeShow: function (menu) {
@@ -434,16 +417,13 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
     },
 
     onWindowMenuHide: function (menu) {
-        Ext.defer(function() {
-            menu.theWin = null;
-        }, 1);
+        menu.theWin = null;
     },
 
     onWindowMenuMaximize: function () {
         var me = this, win = me.windowMenu.theWin;
 
         win.maximize();
-        win.toFront();
     },
 
     onWindowMenuMinimize: function () {
@@ -461,10 +441,6 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
     //------------------------------------------------------
     // Dynamic (re)configuration methods
 
-    getWallpaper: function () {
-        return this.wallpaper.wallpaper;
-    },
-
     setTickSize: function(xTickSize, yTickSize) {
         var me = this,
             xt = me.xTickSize = xTickSize,
@@ -477,11 +453,6 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
             resizer.widthIncrement = xt;
             resizer.heightIncrement = yt;
         });
-    },
-
-    setWallpaper: function (wallpaper, stretch) {
-        this.wallpaper.setWallpaper(wallpaper, stretch);
-        return this;
     },
 
     //------------------------------------------------------
@@ -510,28 +481,7 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
         win.taskButton = me.taskbar.addTaskButton(win);
         win.animateTarget = win.taskButton.el;
 
-        win.on({
-            activate: me.updateActiveWindow,
-            beforeshow: me.updateActiveWindow,
-            deactivate: me.updateActiveWindow,
-            minimize: me.minimizeWindow,
-            destroy: me.onWindowClose,
-            titlechange: me.onWindowTitleChange,
-            scope: me
-        });
-
-        win.on({
-            boxready: function () {
-                win.dd.xTickSize = me.xTickSize;
-                win.dd.yTickSize = me.yTickSize;
-
-                if (win.resizer) {
-                    win.resizer.widthIncrement = me.xTickSize;
-                    win.resizer.heightIncrement = me.yTickSize;
-                }
-            },
-            single: true
-        });
+        me.addWindowListeners(win);
 
         // replace normal window close w/fadeOut animation:
         win.doClose = function ()  {
@@ -547,6 +497,18 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
         };
 
         return win;
+    },
+
+    addWindowListeners: function(win) {
+        win.on({
+            activate: this.updateActiveWindow,
+            beforeshow: this.updateActiveWindow,
+            deactivate: this.updateActiveWindow,
+            minimize: this.minimizeWindow,
+            destroy: this.onWindowClose,
+            titlechange: this.onWindowTitleChange,
+            scope: this
+        });
     },
 
     getActiveWindow: function () {
@@ -571,7 +533,6 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
 
     getDesktopZIndexManager: function () {
         var windows = this.getActiveWindowsSet();
-        // TODO - there has to be a better way to get this...
         return (windows.getCount() && windows.getAt(0).zIndexManager) || null;
     },
 
@@ -657,3 +618,4 @@ Ext.define('EdiromOnline.view.desktop.Desktop', {
         return found;
     }
 });
+

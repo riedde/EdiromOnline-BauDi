@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -17,11 +17,15 @@
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-Ext.define('EdiromOnline.view.window.source.PageBasedView', {
-    extend: 'EdiromOnline.view.window.View',
+Ext.define('de.edirom.online.view.window.source.PageBasedView', {
+    extend: 'Ext.panel.Panel',
+
+    mixins: {
+        observable: 'Ext.util.Observable'
+    },
 
     requires: [
-        'EdiromOnline.view.window.image.ImageViewer'
+        'de.edirom.online.view.window.image.ImageViewer'
     ],
 
     alias : 'widget.pageBasedView',
@@ -32,12 +36,10 @@ Ext.define('EdiromOnline.view.window.source.PageBasedView', {
 
     imageSet: null,
     imageToShow: null,
-    
-    cls: 'pageBasedView',
 
     initComponent: function () {
 
-        this.imageViewer = Ext.create('EdiromOnline.view.window.image.ImageViewer');
+        this.imageViewer = Ext.create('de.edirom.online.view.window.image.ImageViewer');
 
         this.items = [
             this.imageViewer
@@ -148,8 +150,8 @@ Ext.define('EdiromOnline.view.window.source.PageBasedView', {
             }
         });
 
-        me.pageSpinner = Ext.create('EdiromOnline.view.window.util.PageSpinner', {
-            width: 121,
+        me.pageSpinner = Ext.create('de.edirom.online.view.window.source.PageSpinner', {
+            width: 111,
             cls: 'pageSpinner',
             owner: me
         });
@@ -230,3 +232,85 @@ Ext.define('EdiromOnline.view.window.source.PageBasedView', {
         me.imageViewer.showRect(config.rect.x, config.rect.y, config.rect.width, config.rect.height, false); 
     }
 });
+
+//TODO: mit de.edirom.online.view.window.source.MeasureSpinner zusammen legen
+Ext.define('de.edirom.online.view.window.source.PageSpinner', {
+    extend: 'Ext.container.Container',
+
+    alias : 'widget.pageSpinner',
+
+    layout: 'hbox',
+
+    initComponent: function () {
+
+        this.items = [
+        ];
+        this.callParent();
+    },
+
+    next: function() {
+
+        this.store.clearFilter(false);
+
+        var oldIndex = this.store.findExact('id', this.combo.getValue());
+        if(oldIndex + 1 < this.store.getCount())
+            this.setPage(this.store.getAt(oldIndex + 1).get('id'));
+    },
+
+    prev: function() {
+
+        this.store.clearFilter(false);
+
+        var oldIndex = this.store.findExact('id', this.combo.getValue());
+        if(oldIndex > 0)
+            this.setPage(this.store.getAt(oldIndex - 1).get('id'));
+    },
+
+    setPage: function(id) {
+        this.combo.setValue(id);
+        this.owner.setPage(this.combo, this.combo.store);
+    },
+
+    setStore: function(store) {
+
+        this.removeAll();
+
+        this.store = store;
+
+        this.combo = Ext.create('Ext.form.ComboBox', {
+            width: 35,
+            hideTrigger: true,
+            queryMode: 'local',
+            store: store,
+            displayField: 'name',
+            valueField: 'id',
+            cls: 'pageInputBox',
+            autoSelect: true
+        });
+
+        this.add([
+            {
+                xtype: 'button',
+                cls : 'prev toolButton',
+                tooltip: { text: getLangString('view.window.source.SourceView_PageBasedView_previousPage'), align: 'bl-tl' },
+                listeners:{
+                     scope: this,
+                     click: this.prev
+                }
+            },
+            this.combo,
+            {
+                xtype: 'button',
+                cls : 'next toolButton',
+                tooltip: { text: getLangString('view.window.source.SourceView_PageBasedView_nextPage'), align: 'bl-tl' },
+                listeners:{
+                     scope: this,
+                     click: this.next
+                }
+            }
+        ]);
+
+        this.combo.on('select', this.owner.setPage, this.owner);
+    }
+});
+

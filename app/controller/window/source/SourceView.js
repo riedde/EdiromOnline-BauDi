@@ -1,6 +1,6 @@
 /**
  *  Edirom Online
- *  Copyright (C) 2014 The Edirom Project
+ *  Copyright (C) 2011 The Edirom Project
  *  http://www.edirom.de
  *
  *  Edirom Online is free software: you can redistribute it and/or modify
@@ -15,8 +15,10 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Edirom Online.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  ID: $Id: SourceView.js 1273 2012-03-09 16:27:21Z daniel $
  */
-Ext.define('EdiromOnline.controller.window.source.SourceView', {
+Ext.define('de.edirom.online.controller.window.source.SourceView', {
 
     extend: 'Ext.app.Controller',
 
@@ -73,14 +75,13 @@ Ext.define('EdiromOnline.controller.window.source.SourceView', {
             }
         });
         
-        window.doAJAXRequest('data/xql/getAnnotationInfos.xql',
-            'GET', 
-            {
-                uri: view.uri,
-                lang: getPreference('application_language')
+        Ext.Ajax.request({
+            url: 'data/xql/getAnnotationInfos.xql',
+            method: 'GET',
+            params: {
+                uri: view.uri
             },
-            Ext.bind(function(response){
-                var me = this;
+            success: function(response){
                 var data = response.responseText;
                 data = Ext.JSON.decode(data);
 
@@ -94,9 +95,9 @@ Ext.define('EdiromOnline.controller.window.source.SourceView', {
                 });
 
                 me.annotInfosLoaded(priorities, categories, view);
-            }, this)
-        );
-        
+            }
+        });
+
         Ext.Ajax.request({
             url: 'data/xql/getOverlays.xql',
             method: 'GET',
@@ -204,17 +205,15 @@ Ext.define('EdiromOnline.controller.window.source.SourceView', {
             if(typeof view.getActivePage() == 'undefined') return;
             
             var pageId = view.getActivePage().get('id');
-            var lang = getPreference('application_language');
 
-            window.doAJAXRequest('data/xql/getAnnotationsOnPage.xql',
-                'GET', 
-                {
+            Ext.Ajax.request({
+                url: 'data/xql/getAnnotationsOnPage.xql',
+                method: 'GET',
+                params: {
                     uri: view.uri,
-                    pageId: pageId,
-                    lang: lang
+                    pageId: pageId
                 },
-                Ext.bind(function(response){
-                    var me = this;
+                success: function(response){
                     var data = response.responseText;
 
                     var annotations = Ext.create('Ext.data.Store', {
@@ -223,8 +222,9 @@ Ext.define('EdiromOnline.controller.window.source.SourceView', {
                     });
 
                     me.annotationsLoaded(annotations, view, pageId);
-                }, this)
-            );
+                }
+            });
+
         }else {
             view.hideAnnotations();
         }
