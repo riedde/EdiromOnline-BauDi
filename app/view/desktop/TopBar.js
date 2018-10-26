@@ -70,7 +70,7 @@ Ext.define('EdiromOnline.view.desktop.TopBar', {
                 cls: 'ux-desktop-topbar-flex',
                 items: [
                 		me.homeButton,
-						{ xtype: 'tbtext', text: 'Reger-Werkausgabe', id: 'homeBtnLabel' },
+						{ xtype: 'tbtext', text: 'Baumann Digital', id: 'homeBtnLabel' },
 						this.workCombo,
 						{
 							xtype: 'splitter',
