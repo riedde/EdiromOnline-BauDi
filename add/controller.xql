@@ -2,6 +2,7 @@ xquery version "1.0";
 
 declare variable $exist:path external;
 declare variable $exist:resource external;
+declare variable $exist:log-in := xmldb:login('/db','baudi','');
 
 if ($exist:path eq "/") then
     (: forward root path to index.xql :)
