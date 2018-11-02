@@ -25,6 +25,6 @@
         <entry key="application_language" value="de"/>
         <entry key="annotation_layout" value="EdiromOnline.view.window.annotationLayouts.AnnotationLayout1"/>
         <entry key="image_prefix" value="http://localhost:8081/digilib/Scaler/"/>
-        <entry key="edition_path" value="/db/apps/contents"/>
+        <entry key="edition_path" value="/db/apps/contents/baudi"/>
     </entries>
 </prefs>
