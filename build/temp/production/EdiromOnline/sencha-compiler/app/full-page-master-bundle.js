@@ -1,2 +1,2 @@
 // @tag full-page
-// @require /Users/Dennis/Repositories/BauDi/EdiromOnline-BauDi/app.js
+// @require /Users/dried/Repositories/BauDi/EdiromOnline-BauDi/app.js
