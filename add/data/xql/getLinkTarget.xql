@@ -55,17 +55,15 @@ declare function local:getLocalizedTEITitle($node) {
 declare function local:getViews($type, $docUri, $doc) {
     
     string-join((
-        (: XmlView :)
-        concat("{type:'xmlView',uri:'", $docUri, "'}"),
         
         (: SummaryView :)
         concat("{type:'summaryView',uri:'", $docUri, "'}"),
         
         (: HeaderView :)
-(:        if($doc//mei:meiHead or $doc//tei:teiHeader) then(concat("{type:'headerView',uri:'", $docUri, "'}")) else(),:)
+        if($doc//mei:meiHead or $doc//tei:teiHeader) then(concat("{type:'headerView',uri:'", $docUri, "'}")) else(),
 
         (: SourceDescriptionView :)
-(:        if($doc//mei:annot[@type='descLink']) then(concat("{type:'textView', label: 'Quellenbeschreibung', uri:'", ($doc//mei:annot[@type='descLink'])[1]/@plist, "'}")) else(),:)
+        if($doc//mei:annot[@type='descLink']) then(concat("{type:'textView', label: 'Quellenbeschreibung', uri:'", ($doc//mei:annot[@type='descLink'])[1]/@plist, "'}")) else(),
         
         (: SourceView :)
         if($doc//mei:facsimile//mei:graphic[@type='facsimile']) then(concat("{type:'sourceView', defaultView:true, uri:'", $docUri, "'}")) else(),
@@ -92,17 +90,20 @@ declare function local:getViews($type, $docUri, $doc) {
         if($doc//mei:annot[@type='editorialComment']) then(concat("{type:'annotationView', defaultView:true, uri:'", $docUri, "'}")) else(),
         
         (: SearchView :)
-(:        if($doc//mei:note) then(concat("{type:'searchView',uri:'", $docUri, "'}")) else(),:)
+        if($doc//mei:note) then(concat("{type:'searchView',uri:'", $docUri, "'}")) else(),
 
 
         (: iFrameView, RWA :)
-        if($type = 'html') then(concat("{type:'iFrameView', label: '", 'HTML' ,"' ,uri:'", $docUri, "'}")) else(),
+(:  :        if($type = 'html') then(concat("{type:'iFrameView', label: '", 'HTML' ,"' ,uri:'", $docUri, "'}")) else(), :)
         
         (: iFrameView, generic :)
 (:        if($type = 'html') then(concat("{type:'iFrameView', label: '", $doc//head/data(title) ,"' ,uri:'", $docUri, "'}")) else(),:)
         
         (: SourceDescriptionView :)
-        if($doc//mei:annot[@type='descLink']) then(concat("{type:'xmlView', label: 'XML Quellenbeschreibung', uri:'", ($doc//mei:annot[@type='descLink'])[1]/@plist, "'}")) else()
+        if($doc//mei:annot[@type='descLink']) then(concat("{type:'xmlView', label: 'XML Quellenbeschreibung', uri:'", ($doc//mei:annot[@type='descLink'])[1]/@plist, "'}")) else(),
+        
+        (: XmlView :)
+        concat("{type:'xmlView',uri:'", $docUri, "'}")
     ), ',')
 };
 
