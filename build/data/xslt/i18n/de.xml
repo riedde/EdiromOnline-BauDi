@@ -100,7 +100,7 @@
     <entry xml:id="work">Werkbeschreibung</entry>
     <entry xml:id="revisionDesc">Revisionen der Datei</entry>
     <entry xml:id="change">Änderungen</entry>
-    <entry xml:id="workDesc">Einzelheiten des Werks</entry>
+    <entry xml:id="workList">Einzelheiten des Werks</entry>
     <entry xml:id="workTitle">Titel</entry>
     <entry xml:id="unpub">Unveröffentlicht</entry>
     <entry xml:id="geogName">Ort</entry>

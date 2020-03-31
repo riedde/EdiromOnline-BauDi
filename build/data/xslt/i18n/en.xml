@@ -81,7 +81,7 @@
     <entry xml:id="work">Work Description</entry>
     <entry xml:id="revisionDesc">File revisions</entry>
     <entry xml:id="change">Change</entry>
-    <entry xml:id="workDesc">Work Details</entry>
+    <entry xml:id="workList">Work Details</entry>
     <entry xml:id="workTitle">Title</entry>
     <entry xml:id="unpub">Unpublished</entry>
     <entry xml:id="geogName">Place</entry>

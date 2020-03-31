@@ -245,16 +245,16 @@
             
             <xsl:apply-templates select="mei:fileDesc"/>
             
-            <xsl:apply-templates select="mei:workDesc"/>
-            <!-- TODO check for workDesc with resp data -->
+            <xsl:apply-templates select="mei:workList"/>
+            <!-- TODO check for workList with resp data -->
             <!--<xsl:choose>
-                <xsl:when test="count(./mei:workDesc/mei:work) gt 1">
+                <xsl:when test="count(./mei:workList/mei:work) gt 1">
                     <xsl:element name="div">
                         <xsl:attribute name="class">section</xsl:attribute>
                         <xsl:element name="h1">
                             <xsl:value-of select="eof:getLabel('works')"/>
                         </xsl:element>
-                        <xsl:for-each select="./mei:workDesc/mei:work">
+                        <xsl:for-each select="./mei:workList/mei:work">
                             <xsl:call-template name="work">
                                 <xsl:with-param name="labeled">
                                     <xsl:value-of select="true()"/>
@@ -263,8 +263,8 @@
                         </xsl:for-each>
                     </xsl:element>
                 </xsl:when>
-                <xsl:when test="./mei:workDesc/mei:work">
-                    <xsl:apply-templates select="./mei:workDesc/mei:work">
+                <xsl:when test="./mei:workList/mei:work">
+                    <xsl:apply-templates select="./mei:workList/mei:work">
                         <xsl:with-param name="labeled">
                             <xsl:value-of select="false()"/>
                         </xsl:with-param>
@@ -315,7 +315,7 @@
             <xsl:with-param name="sub" select="$sub" tunnel="yes"/>
         </xsl:apply-templates>
     </xsl:template>
-    <xsl:template match="mei:workDesc">
+    <xsl:template match="mei:workList">
         <xsl:variable name="numberOfworks" select="count(mei:work)"/>
         <xsl:choose>
             <xsl:when test="$numberOfworks = 1">
@@ -364,7 +364,7 @@
                             <xsl:value-of select="mei:titleStmt/title[1]/text()"/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:value-of select="eof:getLabel('workDesc')"/>
+                            <xsl:value-of select="eof:getLabel('workList')"/>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:with-param>
