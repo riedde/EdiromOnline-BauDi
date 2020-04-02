@@ -119,7 +119,7 @@ let $return :=
               then(local:getLocalizedMEITitle($hit))
               (: Work :)
               else if(exists($doc//mei:mei) and exists($doc//mei:work))
-              then(local:getLocalizedMEITitle($doc//mei:work/mei:titleStmt))
+              then(local:getLocalizedMEITitle($doc//mei:work))
               (: Source / Score :)
               else if(exists($doc//mei:mei) and exists($doc//mei:source))
               then(local:getLocalizedMEITitle($doc//mei:source/mei:titleStmt))

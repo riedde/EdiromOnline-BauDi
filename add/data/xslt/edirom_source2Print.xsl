@@ -1,14 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
-    xmlns:fo="http://www.w3.org/1999/XSL/Format"
-    xmlns:mei="http://www.music-encoding.org/ns/mei"
-    xmlns:eof="http://www.edirom.de/xslt/ediromOnlineFunctions"
-    xmlns:edirom="http://www.edirom.de"
-    exclude-result-prefixes="xs xd fo mei edirom"
-    xml:space="default"
-    version="2.0">
+<xsl:stylesheet xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:edirom="http://www.edirom.de" xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:mei="http://www.music-encoding.org/ns/mei" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eof="http://www.edirom.de/xslt/ediromOnlineFunctions" exclude-result-prefixes="xs xd fo mei edirom" xml:space="default" version="2.0">
     <xd:doc scope="stylesheet">
         <xd:desc>
             <xd:p><xd:b>Created on:</xd:b> Mar 14, 2012</xd:p>
@@ -43,8 +33,8 @@
                 <h3><xsl:value-of select="@n | @label"><!-- TODO: welches ist der richtige Wert? --></xsl:value-of></h3>
                 <xsl:for-each-group select=".//mei:measure" group-by=".//id(if(contains(@facs, '#'))then(substring-after(@facs, '#'))else(./@facs))/parent::mei:surface/@xml:id">
                     <dl>
-                        <dt><xsl:value-of select="current-group()[1]/@n|current-group()[last()]/@n" separator="–"></xsl:value-of></dt>
-                        <dd><a href="{concat('#', current-grouping-key())}"><xsl:value-of select="current-grouping-key()"></xsl:value-of></a></dd>
+                        <dt><xsl:value-of select="current-group()[1]/@n|current-group()[last()]/@n" separator="–"/></dt>
+                        <dd><a href="{concat('#', current-grouping-key())}"><xsl:value-of select="current-grouping-key()"/></a></dd>
                     </dl>
                 </xsl:for-each-group>
             </div>
@@ -52,7 +42,7 @@
     </xsl:variable>
     <xsl:variable name="measuersBySurface">
         <xsl:for-each-group select=".//mei:measure" group-by=".//id(if(contains(@facs, '#'))then(substring-after(@facs, '#'))else(./@facs))/parent::mei:surface/@xml:id">
-            <eof:facs id ="{current-grouping-key()}">
+            <eof:facs id="{current-grouping-key()}">
                 <xsl:for-each select="current-group()">
                     <xsl:copy-of select="."/>
                 </xsl:for-each>
@@ -146,7 +136,7 @@
     <xsl:template match="mei:graphic"/>
     
     <xsl:template match="mei:graphic[@type = 'facsimile']">
-        <img  src="{concat($facsBasePath,'?fn=', encode-for-uri(@target), $facsImgParas)}"/>
+        <img src="{concat($facsBasePath,'?fn=', encode-for-uri(@target), $facsImgParas)}"/>
     </xsl:template>
     
     <xsl:template match="mei:zone"/>
@@ -160,7 +150,7 @@
             <xsl:analyze-string select="." regex="\n">
                 <xsl:matching-substring> </xsl:matching-substring>
                 <xsl:non-matching-substring>
-                    <xsl:value-of select="."></xsl:value-of>
+                    <xsl:value-of select="."/>
                 </xsl:non-matching-substring>
             </xsl:analyze-string>
         </xsl:template>

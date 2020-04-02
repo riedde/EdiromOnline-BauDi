@@ -1,15 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0"
-  exclude-result-prefixes="#default s html a fo rng tei teix"
-  xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
-  xmlns:fo="http://www.w3.org/1999/XSL/Format"
-  xmlns:html="http://www.w3.org/1999/xhtml"
-  xmlns:rng="http://relaxng.org/ns/structure/1.0"
-  xmlns:s="http://www.ascc.net/xml/schematron"
-  xmlns:tei="http://www.tei-c.org/ns/1.0"
-  xmlns:teix="http://www.tei-c.org/ns/Examples"
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns="http://www.w3.org/1999/xhtml" >
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:rng="http://relaxng.org/ns/structure/1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:s="http://www.ascc.net/xml/schematron" xmlns:teix="http://www.tei-c.org/ns/Examples" xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns:html="http://www.w3.org/1999/xhtml" version="2.0" exclude-result-prefixes="#default s html a fo rng tei teix">
 
   <xsl:param name="cssFile"/>
   <xsl:param name="cssSecondaryFile"/>
@@ -748,7 +737,7 @@ of this software, even if advised of the possibility of such damage.
       <xsl:sort select="@ident"/>
     </xsl:apply-templates>
   </xsl:template>
-  <xsl:template match="tei:divGen[@type='elementcat']"  priority="100">
+  <xsl:template match="tei:divGen[@type='elementcat']" priority="100">
     <div class="atozwrapper">
       <xsl:call-template name="atozHeader">
         <xsl:with-param name="Key">ELEMENT-ALPHA</xsl:with-param>
@@ -789,8 +778,7 @@ of this software, even if advised of the possibility of such damage.
               </xsl:for-each>
             </h3>
             <xsl:for-each select="key('ELEMENT-MODULE',@module)">
-              <xsl:sort
-		  select="@ident"/>
+              <xsl:sort select="@ident"/>
 	      <xsl:call-template name="refDocLink"/>
 	    </xsl:for-each>
           </div>
@@ -804,8 +792,7 @@ of this software, even if advised of the possibility of such damage.
 
 
   <xsl:template name="refDocLink">
-    <span
-	class="refDocLink">
+    <span class="refDocLink">
       <a>
 	<xsl:attribute name="href">
 	  <xsl:choose>
@@ -815,8 +802,7 @@ of this software, even if advised of the possibility of such damage.
 	    </xsl:when>
 	    <xsl:otherwise>
 	      <xsl:text>ref-</xsl:text>
-	      <xsl:value-of
-		  select="@ident"/>
+	      <xsl:value-of select="@ident"/>
 	      <xsl:value-of select="$outputSuffix"/>
 	    </xsl:otherwise>
 	  </xsl:choose>
@@ -827,7 +813,7 @@ of this software, even if advised of the possibility of such damage.
     </span>
   </xsl:template>
 
-  <xsl:template match="tei:divGen[@type='modelclasscat']"  priority="100">
+  <xsl:template match="tei:divGen[@type='modelclasscat']" priority="100">
     <div class="atozwrapper">
       <xsl:call-template name="atozHeader">
         <xsl:with-param name="Key">MODEL-CLASS-ALPHA</xsl:with-param>
@@ -868,8 +854,7 @@ of this software, even if advised of the possibility of such damage.
               </xsl:for-each>
             </h3>
             <xsl:for-each select="key('MODEL-CLASS-MODULE',@module)">
-              <xsl:sort
-		  select="@ident"/>
+              <xsl:sort select="@ident"/>
 	      <xsl:call-template name="refDocLink"/>
             </xsl:for-each>
           </div>
@@ -880,7 +865,7 @@ of this software, even if advised of the possibility of such damage.
       <xsl:apply-templates select="." mode="weave"/>
     </xsl:for-each>
   </xsl:template>
-  <xsl:template match="tei:divGen[@type='attclasscat']"  priority="100">
+  <xsl:template match="tei:divGen[@type='attclasscat']" priority="100">
     <div class="atozwrapper">
       <xsl:call-template name="atozHeader">
         <xsl:with-param name="Key">ATT-CLASS-ALPHA</xsl:with-param>
@@ -920,8 +905,7 @@ of this software, even if advised of the possibility of such damage.
                 <xsl:call-template name="makeDescription"/>
               </xsl:for-each>
             </h3>
-            <xsl:for-each
-		select="key('ATT-CLASS-MODULE',@module)">
+            <xsl:for-each select="key('ATT-CLASS-MODULE',@module)">
 	      <xsl:call-template name="refDocLink"/>
             </xsl:for-each>
           </div>

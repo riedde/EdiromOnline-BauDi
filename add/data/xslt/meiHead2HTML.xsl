@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:mei="http://www.music-encoding.org/ns/mei" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:eof="http://www.edirom.de/xslt/ediromOnlineFunctions" exclude-result-prefixes="xs xd" xpath-default-namespace="http://www.music-encoding.org/ns/mei" version="2.0" xml:space="default">
+<xsl:stylesheet xmlns="http://www.w3.org/1999/xhtml" xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl" xmlns:mei="http://www.music-encoding.org/ns/mei" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eof="http://www.edirom.de/xslt/ediromOnlineFunctions" exclude-result-prefixes="xs xd" xpath-default-namespace="http://www.music-encoding.org/ns/mei" version="2.0" xml:space="default">
 
 <!-- IMPORTs ======================================================= -->
     <xsl:import href="ediromOnline_params.xsl"/>

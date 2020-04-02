@@ -139,7 +139,7 @@ let $internal := if(exists($internal))then($internal)else(
 
 let $type := 
              (: Work :)
-             if(exists($doc//mei:mei) and exists($doc//mei:work) and not(exists($doc//mei:perfMedium)))
+             if(exists($doc//mei:mei) and exists($doc//mei:work)) (: and not(exists($doc//mei:perfMedium)):)
              then(string('work'))
              
              (: Recording :)
@@ -168,24 +168,24 @@ let $type :=
              else(string('unknown'))
              
 let $title := (: Work :)
-              if(exists($doc//mei:mei) and exists($doc//mei:work) and not(exists($doc//mei:perfMedium)))
-              then(local:getLocalizedMEITitle($doc//mei:work/mei:titleStmt)[1])
+              if(exists($doc//mei:mei) and exists($doc//mei:work)) (: and not(exists($doc//mei:perfMedium)):)
+              then(local:getLocalizedMEITitle($doc//mei:work))
               
               (: Recording :)
-              else if(exists($doc//mei:mei) and exists($doc//mei:recording))
-              then(local:getLocalizedMEITitle($doc//mei:fileDesc/mei:titleStmt[1]))
+             (: else if(exists($doc//mei:mei) and exists($doc//mei:recording))
+              then(local:getLocalizedMEITitle($doc//mei:fileDesc/mei:titleStmt[1])):)
               
               (: Edition :)
               else if (exists($doc//mei:mei) and starts-with($doc//mei:mei/@xml:id, 'rwa_edition'))
               then($doc//mei:fileDesc//mei:titleStmt//mei:title[@type = 'main'][@xml:lang = $lang])
 
               (: Source / Score without Shelfmark:)
-              else if(exists($doc//mei:mei) and exists($doc//mei:source) and not(exists($doc//mei:identifier[@type='shelfmark'])))
-              then(local:getLocalizedMEITitle($doc//mei:source/mei:titleStmt[1]))
+              else if(exists($doc//mei:mei) and exists($doc//mei:manifestation) and not(exists($doc//mei:identifier[@type='shelfmark'])))
+              then(local:getLocalizedMEITitle($doc//mei:manifestation[1]/mei:titleStmt[1]))
               
               (: Source / Score with Shelfmark:)
               else if(exists($doc//mei:mei) and exists($doc//mei:source) and exists($doc//mei:identifier[@type='shelfmark']))
-              then(concat(local:getLocalizedMEITitle($doc//mei:source/mei:titleStmt[1]),' | ',$doc//mei:source//mei:identifier[@type='shelfmark']))
+              then(concat(local:getLocalizedMEITitle($doc//mei:manifestation[1]/mei:titleStmt[1]),' | ',$doc//mei:manifestation/mei:identifier[1]))
               
               (: Text :)
               else if(exists($doc/tei:TEI))

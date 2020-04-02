@@ -45,8 +45,8 @@ declare function local:generateRespSentence($names) {
 
 declare function local:getSourceSummary($doc, $facsBasePath) {
     let $work := doc($doc//mei:relation[@rel='isEmbodimentOf'][1]/substring-before(@target, '#'))
-    let $title := $work//mei:work/mei:titleStmt/mei:title[1]/text()
-    let $resp := local:generateRespSentence($work//mei:work/mei:titleStmt/mei:respStmt/*[local-name() != 'resp']/text())
+    let $title := local:getLocalizedTitle($work//mei:work)/text()
+    let $resp := local:generateRespSentence($work//mei:fileDesc/mei:titleStmt/mei:respStmt/*[local-name() != 'resp']/text())
     let $expression := $work/id($doc//mei:relation[@rel='isEmbodimentOf'][1]/substring-after(@target, '#'))/string(@label)
     return
 
@@ -260,7 +260,7 @@ declare function local:getWorkSummary($doc, $docUri) {
             
             <div class="resps">
             {
-                for $resp in $doc//mei:work/mei:titleStmt/mei:respStmt/mei:*[not(local-name() eq 'resp') and @role]
+                for $resp in $doc//mei:fileDesc/mei:respStmt/mei:*[not(local-name() eq 'resp') and @role]
                 return (
                     <div class="label">{concat(upper-case(substring($resp/@role,1,1)),substring($resp/@role,2))}</div>,
                     <div class="name">{$resp/text()}</div>
@@ -270,9 +270,9 @@ declare function local:getWorkSummary($doc, $docUri) {
             
             <h1>
             {
-                if($doc//mei:work/mei:titleStmt/mei:title[@type eq 'main'])
-                then($doc//mei:work/mei:titleStmt/mei:title[@type eq 'main'][1]//text())
-                else($doc//mei:work/mei:titleStmt/mei:title[1]//text())
+                if(local:getLocalizedTitle($doc//mei:work))
+                then(local:getLocalizedTitle($doc//mei:work))
+                else($doc//mei:work/mei:title[1]//text())
             }
             </h1>
             
