@@ -61,7 +61,7 @@ declare function source:getLabels($sources as xs:string*) as xs:string {
 :)
 declare function source:getLabel($source as xs:string) as xs:string {
      
-    doc($source)//mei:manifestation[1]/mei:titleStmt/mei:title[1]/text()
+    doc($source)//mei:manifestation[1]/mei:titleStmt[1]/mei:title[1]/text()
 };
 
 (:~

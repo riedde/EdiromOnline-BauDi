@@ -147,7 +147,7 @@ let $type :=
              then(string('recording'))
              
              (: Source / Score :)
-             else if(exists($doc//mei:mei) and exists($doc//mei:source))
+             else if(exists($doc//mei:mei) and exists($doc//mei:manifestation))
              then(string('source'))
              
              
@@ -168,7 +168,7 @@ let $type :=
              else(string('unknown'))
              
 let $title := (: Work :)
-              if(exists($doc//mei:mei) and exists($doc//mei:work)) (: and not(exists($doc//mei:perfMedium)):)
+              if(exists($doc//mei:mei) and exists($doc//mei:work) and not(exists($doc//mei:manifestation))) (: and not(exists($doc//mei:perfMedium)):)
               then(local:getLocalizedMEITitle($doc//mei:work))
               
               (: Recording :)
@@ -180,12 +180,12 @@ let $title := (: Work :)
               then($doc//mei:fileDesc//mei:titleStmt//mei:title[@type = 'main'][@xml:lang = $lang])
 
               (: Source / Score without Shelfmark:)
-              else if(exists($doc//mei:mei) and exists($doc//mei:manifestation) and not(exists($doc//mei:identifier[@type='shelfmark'])))
+              else if(exists($doc//mei:mei) and exists($doc//mei:manifestation) and not(exists($doc//mei:identifier[1])))
               then(local:getLocalizedMEITitle($doc//mei:manifestation[1]/mei:titleStmt[1]))
               
               (: Source / Score with Shelfmark:)
-              else if(exists($doc//mei:mei) and exists($doc//mei:source) and exists($doc//mei:identifier[@type='shelfmark']))
-              then(concat(local:getLocalizedMEITitle($doc//mei:manifestation[1]/mei:titleStmt[1]),' | ',$doc//mei:manifestation/mei:identifier[1]))
+              else if(exists($doc//mei:mei) and exists($doc//mei:manifestation) and exists($doc//mei:identifier[@type='shelfmark']))
+              then(concat(local:getLocalizedMEITitle($doc//mei:manifestation[1]/mei:titleStmt[1]),' | ',$doc//mei:manifestation/mei:identifier[@type='shelfmark']))
               
               (: Text :)
               else if(exists($doc/tei:TEI))
