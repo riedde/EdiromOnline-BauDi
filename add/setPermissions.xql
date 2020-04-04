@@ -43,7 +43,7 @@ declare function local:scan-collections($root as xs:anyURI, $func as function
         local:scan-collections(xs:anyURI($root || "/" || $child), $func)
 };
 
-let $perms := "g+wxr,u+wxr,o+xr"
+let $perms := "rwxrwx---"
 
 let $ediromOnline := local:scan(xs:anyURI("/db/apps/EdiromOnline"), function($collection, $resource) {
                         if ($resource and 

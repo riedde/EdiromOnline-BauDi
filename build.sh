@@ -4,13 +4,13 @@
 sencha ant clean
 
 # building the app
-sencha app build $1
+sencha app build #$1
 
 # get additional stuff for exist-db
 ant build-plus
 
 # build xar
 cd build
-ant
+ant $1 -Dp.target.pass=$2
 
 cd ..
