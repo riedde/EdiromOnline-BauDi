@@ -3,10 +3,17 @@
     overflow: hidden !important;
 }
 
+
 /* reenables scroll bar in searchWindows on Windows */
 .searchWindow .x-panel-body {
     overflow-y: scroll !important;
 }
+
+/* reenables scroll bar in metadataView/HeaderView on Windows */
+.headerView .x-panel-body {
+    overflow-y: scroll !important;
+}
+
 
 .sub {
     font-size: 60%;

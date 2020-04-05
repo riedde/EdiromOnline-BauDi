@@ -57,50 +57,45 @@ declare function local:getViews($type, $docUri, $doc) {
     string-join((
         
         (: SummaryView :)
-        concat("{type:'summaryView',uri:'", $docUri, "'}"),
+(:        concat("{type:'summaryView',uri:'", $docUri, "'}"),:)
         
-        (: HeaderView :)
+        (: HeaderView (Metadata):)
         if($doc//mei:meiHead or $doc//tei:teiHeader) then(concat("{type:'headerView',uri:'", $docUri, "'}")) else(),
 
         (: SourceDescriptionView :)
         if($doc//mei:annot[@type='descLink']) then(concat("{type:'textView', label: 'Quellenbeschreibung', uri:'", ($doc//mei:annot[@type='descLink'])[1]/@plist, "'}")) else(),
         
+        
+        (: SourceDescriptionView :)
+        if($doc//mei:annot[@type='descLink']) then(concat("{type:'xmlView', label: 'XML Quellenbeschreibung', uri:'", ($doc//mei:annot[@type='descLink'])[1]/@plist, "'}")) else(),
         (: SourceView :)
         if($doc//mei:facsimile//mei:graphic[@type='facsimile']) then(concat("{type:'sourceView', defaultView:true, uri:'", $docUri, "'}")) else(),
-
-        (: AudioView :)
-        if($doc//mei:recording) then(concat("{type:'audioView', defaultView:true, uri:'", $docUri, "'}")) else(),
-
-		(: VerovioView :)
-        if($doc//mei:body//mei:measure and $doc//mei:body//mei:note) then(concat("{type:'verovioView',uri:'", $docUri, "'}")) else(),
-
+        (: SourceView :)
+        if($doc//tei:facsimile//tei:graphic) then(concat("{type:'facsimileView', uri:'", $docUri, "'}")) else(),
+        (: AnnotationView :)
+        if($doc//mei:annot[@type='editorialComment']) then(concat("{type:'annotationView', defaultView:true, uri:'", $docUri, "'}")) else(),
         (: TextView :)
         if($doc//tei:body[matches(.//text(), '[^\s]+')]) then(concat("{type:'textView', defaultView:true, uri:'", $docUri, "'}")) else(),
         
         (: Music TextView :)
-(:        if($doc//mei:div[1][matches(.//text(), '[^\s]+')]) then(concat("{type:'textView', defaultView:true, uri:'", $docUri, "'}")) else(),:)
-
-        (: SourceView :)
-        if($doc//tei:facsimile//tei:graphic) then(concat("{type:'facsimileView', uri:'", $docUri, "'}")) else(),
+        if($doc//mei:div[1][matches(.//text(), '[^\s]+')]) then(concat("{type:'textView', defaultView:true, uri:'", $docUri, "'}")) else(),
+        
+		  (: VerovioView :)
+        if($doc//mei:body//mei:measure and $doc//mei:body//mei:note) then(concat("{type:'verovioView',uri:'", $docUri, "'}")) else(),
+      (: AudioView :)
+        if($doc//mei:recording) then(concat("{type:'audioView', defaultView:true, uri:'", $docUri, "'}")) else(),
 
         (: TextFacsimileSplitView :)
 (:        if($doc//tei:facsimile//tei:graphic and $doc//tei:pb[@facs]) then(concat("{type:'textFacsimileSplitView', uri:'", $docUri, "'}")) else(),:)
 
-        (: AnnotationView :)
-        if($doc//mei:annot[@type='editorialComment']) then(concat("{type:'annotationView', defaultView:true, uri:'", $docUri, "'}")) else(),
-        
         (: SearchView :)
-        if($doc//mei:note) then(concat("{type:'searchView',uri:'", $docUri, "'}")) else(),
-
+(:        if($doc//mei:note) then(concat("{type:'searchView',uri:'", $docUri, "'}")) else(),:)
 
         (: iFrameView, RWA :)
 (:  :        if($type = 'html') then(concat("{type:'iFrameView', label: '", 'HTML' ,"' ,uri:'", $docUri, "'}")) else(), :)
         
         (: iFrameView, generic :)
 (:        if($type = 'html') then(concat("{type:'iFrameView', label: '", $doc//head/data(title) ,"' ,uri:'", $docUri, "'}")) else(),:)
-        
-        (: SourceDescriptionView :)
-        if($doc//mei:annot[@type='descLink']) then(concat("{type:'xmlView', label: 'XML Quellenbeschreibung', uri:'", ($doc//mei:annot[@type='descLink'])[1]/@plist, "'}")) else(),
         
         (: XmlView :)
         concat("{type:'xmlView',uri:'", $docUri, "'}")

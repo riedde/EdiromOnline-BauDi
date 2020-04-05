@@ -42,7 +42,7 @@ Ext.define('EdiromOnline.view.window.image.ImageViewer', {
     imgWidth: 0,
     imgHeight: 0,
 
-    imgPrefix: 'http://localhost:8081/digilib/Scaler/',
+    imgPrefix: 'http://digilib.baumann-digital.de/',
     
     shapes: null,
     shapesHidden: false,
