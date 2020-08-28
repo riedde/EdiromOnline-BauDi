@@ -61,7 +61,7 @@ declare function source:getLabels($sources as xs:string*) as xs:string {
 :)
 declare function source:getLabel($source as xs:string) as xs:string {
      
-    doc($source)//mei:manifestation[1]/mei:titleStmt[1]/mei:title[1]/text()
+    doc($source)//mei:manifestation[1]/mei:titleStmt[1]/mei:title[1]/mei:titlePart[@type='main']/text()
 };
 
 (:~
@@ -94,5 +94,5 @@ declare function source:getSiglaAsArray($sources as xs:string*) as xs:string* {
 :)
 declare function source:getSiglum($source as xs:string) as xs:string? {
      
-    doc($source)//mei:source/mei:identifier[@type eq 'siglum'][1]//text()
+    doc($source)//mei:manifestation[@type][1]/@type
 };
