@@ -33,10 +33,9 @@ declare namespace edirom="http://www.edirom.de/ns/1.3";
 
 declare function local:getLocalizedTitle($node) {
   let $lang := request:get-parameter('lang', '')
-  let $nodeName := local-name($node)
   return
-      if ($lang = $node/mei:title/@xml:lang)
-      then ($node/mei:title[@xml:lang = $lang]/text())
+      if ($node/mei:title[@type="uniform"])
+      then ($node/mei:title[@type="uniform"]/mei:titlePart[@type='main']/text())
       else ($node/mei:title[1]/text())
 
 };

@@ -92,8 +92,8 @@ declare function annotation:toJSON($anno as element()) as xs:string {
     let $sigla := string-join(
                     for $p in distinct-values($pList)
                     let $pDoc := doc($p)
-                    return if ($pDoc//mei:sourceDesc/mei:source/mei:identifier[@type = 'siglum'])
-                            then $pDoc//mei:sourceDesc/mei:source/mei:identifier[@type = 'siglum']/text()
+                    return if ($pDoc//mei:manifestation[1]/@type/string())
+                            then ($pDoc//mei:manifestation[1]/@type/string())
                             else ()
     , ', ')
     let $catURIs := tokenize(replace($anno/mei:ptr[@type = 'categories']/@target,'#',''),' ')
