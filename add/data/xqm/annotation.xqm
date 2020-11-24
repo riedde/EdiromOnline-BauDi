@@ -92,8 +92,8 @@ declare function annotation:toJSON($anno as element()) as xs:string {
     let $sigla := string-join(
                     for $p in distinct-values($pList)
                     let $pDoc := doc($p)
-                    return if ($pDoc//mei:sourceDesc/mei:source/mei:identifier[@type = 'siglum'])
-                            then $pDoc//mei:sourceDesc/mei:source/mei:identifier[@type = 'siglum']/text()
+                    return if ($pDoc//mei:manifestationList/mei:manifestation/mei:identifier[@type = 'siglum'])
+                            then $pDoc//mei:manifestationList/mei:manifestation/mei:identifier[@type = 'siglum']/text()
                             else ()
     , ', ')
     let $catURIs := tokenize(replace($anno/mei:ptr[@type = 'categories']/@target,'#',''),' ')
@@ -124,7 +124,10 @@ declare function annotation:getContent($anno as element(), $idPrefix as xs:strin
     let $p := $anno/mei:p
     
     (:let $xsltBase := concat('file:', system:get-module-load-path(), '/../xslt/'):)
-    let $xsltBase := concat(replace(system:get-module-load-path(), 'embedded-eXist-server', ''), '/../xslt/') (: TODO: Prüfen, wie wir an dem replace vorbei kommen:)
+    (:let $xsltBase := concat(replace(system:get-module-load-path(), 'embedded-eXist-server', ''), '/../xslt/'):)
+    let $xsltBase := concat('xmldb:exist:///db/apps/EdiromOnline/data/xqm/', '/../xslt/')
+    
+    (: TODO: Prüfen, wie wir an dem replace vorbei kommen:)
     
     let $html := transform:transform($p,concat($xsltBase,'meiP2html.xsl'),
     <parameters><param name="idPrefix" value="{$idPrefix}"/><param name="imagePrefix" value="{eutil:getPreference('image_prefix', request:get-parameter('edition', ''))}"/></parameters>)

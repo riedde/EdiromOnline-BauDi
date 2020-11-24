@@ -53,13 +53,13 @@ declare function local:getSourceSummary($doc, $facsBasePath) {
     <div class="summaryViewSource">
         <h1>
             {
-                if($doc//mei:source/mei:titleStmt/mei:title[@type eq 'main'])
-                then($doc//mei:source/mei:titleStmt/mei:title[@type eq 'main'][1]//text())
-                else($doc//mei:source/mei:titleStmt/mei:title[1]//text())
+                if($doc//mei:manifestationList/mei:manifestation/mei:title[@type eq 'main'])
+                then($doc//mei:manifestationList/mei:manifestation/mei:title[@type eq 'main'][1]//text())
+                else($doc//mei:manifestationList/mei:manifestation/mei:title[1]//text())
             }
             {
-                if($doc//mei:source//mei:identifier[@type eq 'siglum'])
-                then(concat(' ', $doc//mei:source//mei:identifier[@type eq 'siglum'][1]//text()))
+                if($doc//mei:manifestation//mei:identifier[@type eq 'siglum'])
+                then(concat(' ', $doc//mei:manifestation//mei:identifier[@type eq 'siglum'][1]//text()))
                 else()
             }
         </h1>
@@ -71,7 +71,7 @@ declare function local:getSourceSummary($doc, $facsBasePath) {
             </div>
             
             {
-                for $name in $doc//mei:source/mei:titleStmt/mei:respStmt/mei:*[local-name() eq 'persName' or local-name() eq 'name']
+                for $name in $doc//mei:manifestationList/mei:manifestation/mei:respStmt/mei:*[local-name() eq 'persName' or local-name() eq 'name']
                 return
                     <div class="resp metaRow">
                         <div class="key">
@@ -87,7 +87,7 @@ declare function local:getSourceSummary($doc, $facsBasePath) {
             }
             
             {
-                for $date in $doc//mei:source/mei:pubStmt/mei:date | $doc//mei:source/mei:history/mei:creation/mei:date[1]
+                for $date in $doc//mei:manifestation/mei:pubStmt/mei:date | $doc//mei:manifestation/mei:history/mei:creation/mei:date[1]
                 return
                     <div class="dating metaRow">
                         <div class="key">Dating</div>
@@ -98,9 +98,9 @@ declare function local:getSourceSummary($doc, $facsBasePath) {
             
             {
                 (: probably a Manuscript… :)
-                if(count($doc//mei:source/mei:itemList/mei:item) eq 1)
+                if(count($doc//mei:manifestation/mei:itemList/mei:item) eq 1)
                 then(
-                    for $item in $doc//mei:source/mei:itemList/mei:item
+                    for $item in $doc//mei:manifestation/mei:itemList/mei:item
                     return
                         if($item/mei:physDesc/mei:repository)
                         then(
@@ -124,11 +124,11 @@ declare function local:getSourceSummary($doc, $facsBasePath) {
             }
 
             {
-                if($doc//mei:source/mei:pubStmt//mei:*[@role eq 'publisher'])
+                if($doc//mei:manifestation/mei:pubStmt//mei:*[@role eq 'publisher'])
                 then(
                     <div class="publisher metaRow">
                         <div class="key">Publisher</div>
-                        <div class="value">{$doc//mei:source/mei:pubStmt//mei:*[@role eq 'publisher'][1]/text()}</div>
+                        <div class="value">{$doc//mei:manifestation/mei:pubStmt//mei:*[@role eq 'publisher'][1]/text()}</div>
                     </div>
                 )
                 else()
@@ -139,7 +139,7 @@ declare function local:getSourceSummary($doc, $facsBasePath) {
                 then(
                     <div class="plateNum metaRow">
                     <div class="key">Plate number</div>
-                    <div class="value">{$doc//mei:source/mei:physDesc/mei:plateNum[1]/text()}</div>
+                    <div class="value">{$doc//mei:manifestation/mei:physDesc/mei:plateNum[1]/text()}</div>
                 </div>
                 )
                 else()
@@ -148,10 +148,10 @@ declare function local:getSourceSummary($doc, $facsBasePath) {
         </div>
 
         {
-            if($doc//mei:source//mei:titlePage/@facs)
+            if($doc//mei:manifestation//mei:titlePage/@facs)
             then(
                 <div class="titlePage">
-                    <img src="{local:getImagePath($facsBasePath, $doc//mei:source//mei:titlePage[1]/@facs, $imageWidth)}"/>
+                    <img src="{local:getImagePath($facsBasePath, $doc//mei:manifestation//mei:titlePage[1]/@facs, $imageWidth)}"/>
                 </div>
             )
             else if($doc//mei:facsimile/mei:surface/mei:graphic)
@@ -160,11 +160,11 @@ declare function local:getSourceSummary($doc, $facsBasePath) {
                     <img src="{local:getImagePath($facsBasePath, $doc//mei:facsimile/mei:surface[1]/mei:graphic[1]/@target, $imageWidth)}"/>
                 </div>
             )
-            else if($doc//mei:source//mei:titlePage)
+            else if($doc//mei:manifestation//mei:titlePage)
             then(
                 <div class="titlePage">
                     (: TODO: transformieren :)
-                    {$doc//mei:source//mei:titlePage[1]/text()}
+                    {$doc//mei:manifestation//mei:titlePage[1]/text()}
                 </div>
             )
             else()
@@ -296,7 +296,7 @@ declare function local:getWorkSummary($doc, $docUri) {
             let $target := concat($docUri, '#', $expression/@xml:id)
             let $manifestations := for $source in //mei:relation[@target = $target and @rel = 'isEmbodimentOf']/root()
                                     return
-                                        <div class="manifestation">{$source//mei:source/mei:titleStmt/mei:title[1]/text()}</div>
+                                        <div class="manifestation">{$source//mei:manifestationList/mei:manifestation/mei:title[1]/text()}</div>
             return
                 <div class="expression"><h1>{$label}</h1><div class="manifestations">{$manifestations}</div></div>
         }

@@ -21,8 +21,8 @@
     <version>1.0</version>
     <entries>
         <entry key="application_language" value="de"/>
-        <entry key="annotation_layout" value="EdiromOnline.view.window.annotationLayouts.AnnotationLayout1"/>
+        <entry key="annotation_layout" value="EdiromOnline.view.window.annotationLayouts.AnnotationLayout2"/>
         <entry key="image_prefix" value="https://digilib.baumann-digital.de/"/>
-        <entry key="edition_path" value="/db/apps/baudiEditions/data"/>
+        <entry key="edition_path" value="/db/apps/baudiEdirom/Editions/data"/>
     </entries>
 </prefs>

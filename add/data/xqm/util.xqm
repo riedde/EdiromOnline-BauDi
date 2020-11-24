@@ -105,7 +105,7 @@ declare function eutil:getDocumentLabel($doc as xs:string) as xs:string {
 :)
 declare function eutil:getLanguageString($key as xs:string, $values as xs:string*) as xs:string {
 
-    eutil:getLanguageString($key, $values, 'en')
+    eutil:getLanguageString($key, $values, 'de')
 };
 
 (:~
@@ -118,8 +118,9 @@ declare function eutil:getLanguageString($key as xs:string, $values as xs:string
 :)
 declare function eutil:getLanguageString($key as xs:string, $values as xs:string*, $lang as xs:string) as xs:string {
 
-    let $base := concat('file:', system:get-module-load-path())
-    let $file := doc(concat($base, '/../locale/edirom-lang-', $lang, '.xml'))
+    (:let $base := concat('file:', 'xmldb:exist:///db/apps/EdiromOnline/data/xqm/')
+    let $file := doc(concat($base, '../locale/edirom-lang-', $lang, '.xml')):)
+    let $file := doc(concat('xmldb:exist:///db/apps/EdiromOnline/data/locale/edirom-lang-', $lang, '.xml'))
     
     let $string := $file//entry[@key = $key]/string(@value)
     let $string := functx:replace-multi($string, for $i in (0 to (count($values) - 1)) return concat('\{',$i,'\}'), $values)
