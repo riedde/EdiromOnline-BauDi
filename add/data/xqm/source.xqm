@@ -38,7 +38,7 @@ declare namespace mei="http://www.music-encoding.org/ns/mei";
 :)
 declare function source:isSource($uri as xs:string) as xs:boolean {
     
-    exists(doc($uri)//mei:mei) and exists(doc($uri)//mei:source)
+    exists(doc($uri)//mei:mei) and exists(doc($uri)//mei:manifestation)
 };
 
 (:~
@@ -61,7 +61,7 @@ declare function source:getLabels($sources as xs:string*) as xs:string {
 :)
 declare function source:getLabel($source as xs:string) as xs:string {
      
-    doc($source)//mei:manifestation[1]/mei:titleStmt[1]/mei:title[1]/mei:titlePart[@type='main']/text()
+    doc($source)//mei:manifestation[1]//mei:title[1]/mei:titlePart[@type="main"]/text()
 };
 
 (:~
@@ -94,5 +94,5 @@ declare function source:getSiglaAsArray($sources as xs:string*) as xs:string* {
 :)
 declare function source:getSiglum($source as xs:string) as xs:string? {
      
-    doc($source)//mei:manifestation[@type][1]/@type
+    doc($source)//mei:manifestation/mei:identifier[@type eq 'siglum'][1]//text()
 };

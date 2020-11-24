@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project default="xar" name="${package(abbrev)}">
     <xmlproperty file="./expath-pkg.xml"/>
     <tstamp>
@@ -9,7 +8,7 @@
     <property name="build.dir" value="../build-xar"/>
     <property name="temp.dir" value="temp"/>
     
-    <property name="env.EXIST_PATH" value="/opt/exist/exist-distribution-5.2.0"></property>
+    <property name="env.EXIST_PATH" value="/opt/exist/exist-distribution-5.2.0"/>
     <property name="project.version" value="${package(version)}"/>
     <property name="project.app" value="${package(abbrev)}"/>
     <property name="p.target.user" value="admin"/>

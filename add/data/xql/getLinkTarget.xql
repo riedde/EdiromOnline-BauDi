@@ -34,9 +34,11 @@ import module namespace functx = "http://www.functx.com" at "../xqm/functx-1.0-n
 declare variable $lang := request:get-parameter('lang', '');
 
 declare function local:getLocalizedMEITitle($node) {
-      if ($node/mei:title[@type="uniform"])
-      then ($node/mei:title[@type="uniform"]/mei:titlePart[@type='main']/text())
-      else ($node/mei:title[1]/text())
+  let $title := $node//mei:title[1]/mei:titlePart[@type="main"]/text()
+  return
+      if ($title)
+      then (normalize-space($title))
+      else ('noTitle')
 
 };
 
@@ -55,36 +57,32 @@ declare function local:getViews($type, $docUri, $doc) {
     string-join((
         
         (: SummaryView :)
-        concat("{type:'summaryView',uri:'", $docUri, "'}"),
-        
-        (: AnnotationView :)
-        if($doc//mei:annot[contains(@type,'editorialComment')]) then(concat("{type:'annotationView', defaultView:true, uri:'", $docUri, "'}")) else(),
+(:        concat("{type:'summaryView',uri:'", $docUri, "'}"),:)
         
         (: HeaderView (Metadata):)
-(:        if($doc//mei:meiHead or $doc//tei:teiHeader) then(concat("{type:'headerView',uri:'", $docUri, "'}")) else(),:)
+        if($doc//mei:meiHead or $doc//tei:teiHeader) then(concat("{type:'headerView',uri:'", $docUri, "'}")) else(),
 
+        (: SourceDescriptionView :)
+        if($doc//mei:annot[@type='descLink']) then(concat("{type:'textView', label: 'Quellenbeschreibung', uri:'", ($doc//mei:annot[@type='descLink'])[1]/@plist, "'}")) else(),
+        
         
         (: SourceDescriptionView :)
-        (:if($doc//mei:annot[@type='descLink'])
-        then(concat("{type:'xmlView', label: 'XML Quellenbeschreibung', uri:'", ($doc//mei:annot[@type='descLink'])[1]/@plist, "'}"))
-        else(),:)
-        
+        if($doc//mei:annot[@type='descLink']) then(concat("{type:'xmlView', label: 'XML Quellenbeschreibung', uri:'", ($doc//mei:annot[@type='descLink'])[1]/@plist, "'}")) else(),
         (: SourceView :)
         if($doc//mei:facsimile//mei:graphic[@type='facsimile']) then(concat("{type:'sourceView', defaultView:true, uri:'", $docUri, "'}")) else(),
-        
         (: SourceView :)
-(:        if($doc//tei:facsimile//tei:graphic) then(concat("{type:'facsimileView', uri:'", $docUri, "'}")) else(),:)
-        
+        if($doc//tei:facsimile//tei:graphic) then(concat("{type:'facsimileView', uri:'", $docUri, "'}")) else(),
+        (: AnnotationView :)
+        if($doc//mei:annot[@type='editorialComment']) then(concat("{type:'annotationView', defaultView:true, uri:'", $docUri, "'}")) else(),
         (: TextView :)
-(:        if($doc//tei:body[matches(.//text(), '[^\s]+')]) then(concat("{type:'textView', defaultView:true, uri:'", $docUri, "'}")) else(),:)
+        if($doc//tei:body[matches(.//text(), '[^\s]+')]) then(concat("{type:'textView', defaultView:true, uri:'", $docUri, "'}")) else(),
         
         (: Music TextView :)
-(:        if($doc//mei:div[1][matches(.//text(), '[^\s]+')]) then(concat("{type:'textView', defaultView:true, uri:'", $docUri, "'}")) else(),:)
+        if($doc//mei:div[1][matches(.//text(), '[^\s]+')]) then(concat("{type:'textView', defaultView:true, uri:'", $docUri, "'}")) else(),
         
 		  (: VerovioView :)
         if($doc//mei:body//mei:measure and $doc//mei:body//mei:note) then(concat("{type:'verovioView',uri:'", $docUri, "'}")) else(),
-        
-        (: AudioView :)
+      (: AudioView :)
         if($doc//mei:recording) then(concat("{type:'audioView', defaultView:true, uri:'", $docUri, "'}")) else(),
 
         (: TextFacsimileSplitView :)
@@ -165,7 +163,7 @@ let $type :=
              else(string('unknown'))
              
 let $title := (: Work :)
-              if(exists($doc//mei:mei) and exists($doc//mei:work) and not(exists($doc//mei:manifestation))) (: and not(exists($doc//mei:perfMedium)):)
+              if(not(exists($doc//mei:mei)) and exists($doc//mei:work) and not(exists($doc//mei:manifestation))) (: and not(exists($doc//mei:perfMedium)):)
               then(local:getLocalizedMEITitle($doc//mei:work))
               
               (: Recording :)
@@ -173,16 +171,16 @@ let $title := (: Work :)
               then(local:getLocalizedMEITitle($doc//mei:fileDesc/mei:titleStmt[1])):)
               
               (: Edition :)
-              else if (exists($doc//mei:mei) and starts-with($doc//mei:mei/@xml:id, 'rwa_edition'))
+              else if (exists($doc//mei:mei) and starts-with($doc//mei:mei/@xml:id, 'baudi_99_'))
               then($doc//mei:fileDesc//mei:titleStmt//mei:title[@type = 'main'][@xml:lang = $lang])
 
               (: Source / Score without Shelfmark:)
               else if(exists($doc//mei:mei) and exists($doc//mei:manifestation) and not(exists($doc//mei:identifier[1])))
-              then($doc//mei:manifestation[1]/@type/string())
+              then(local:getLocalizedMEITitle($doc//mei:manifestation[1]))
               
               (: Source / Score with Shelfmark:)
               else if(exists($doc//mei:mei) and exists($doc//mei:manifestation) and exists($doc//mei:identifier[@type='shelfmark']))
-              then(concat($doc//mei:manifestation[1]/@type/string(),' | ',$doc//mei:manifestation//mei:repository//mei:corpName,', ',$doc//mei:manifestation//mei:repository//mei:identifier[@type='shelfmark']))
+              then(concat(local:getLocalizedMEITitle($doc//mei:manifestation[1]),' | ',$doc//mei:manifestation/mei:identifier[@type='shelfmark']))
               
               (: Text :)
               else if(exists($doc/tei:TEI))

@@ -32,8 +32,8 @@ let $artist := $doc//mei:titleStmt/mei:respStmt/mei:persName[@role='artist']
 let $album := $doc//mei:meiHead/mei:fileDesc/mei:sourceDesc/mei:source[1]/mei:titleStmt/mei:title[1]/text()
 let $albumCover := $doc//mei:graphic[@type='cover']/string(@target)
 let $records := for $rec in $doc//mei:recording
-                let $recSource := $doc//mei:manifestation[1]
-                let $recTitle := $recSource/mei:titleStmt/mei:title/mei:titlePart[@type='main']/text()
+                let $recSource := $doc//mei:source[@xml:id = substring-after($rec/@decls, '#')]
+                let $recTitle := $recSource/mei:titleStmt/mei:title
                 let $avFile := $rec/mei:avFile[1]/string(@target)
                 return
                     '{

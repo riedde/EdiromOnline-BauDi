@@ -31,13 +31,12 @@ module namespace work = "http://www.edirom.de/xquery/work";
 declare namespace mei="http://www.music-encoding.org/ns/mei";
 declare namespace edirom="http://www.edirom.de/ns/1.3";
 
-declare function local:getLocalizedTitle($node) {
-  let $lang := request:get-parameter('lang', '')
+declare function local:getLocalizedTitle($work) {
+  let $title := $work/mei:title[@type="uniform"]/mei:titlePart[@type="main"]/string()
   return
-      if ($node/mei:title[@type="uniform"])
-      then ($node/mei:title[@type="uniform"]/mei:titlePart[@type='main']/text())
-      else ($node/mei:title[1]/text())
-
+    if($title)
+    then(/replace(normalize-space($title), '"', '\\"'))
+    else('noTitle')
 };
 
 (:~
@@ -48,13 +47,14 @@ declare function local:getLocalizedTitle($node) {
 :)
 declare function work:toJSON($uri as xs:string) as xs:string {
     
-    let $work := doc($uri)/mei:mei
+    let $work := doc($uri)/mei:work
+    let $workID := $work/@xml:id/string()
     return
         concat('
             {',
-                'id: "', $work/string(@xml:id), '", ',
+                'id: "', $workID, '", ', (: $work/string(@xml:id) :)
                 'doc: "', $uri, '", ',
-                'title: "', local:getLocalizedTitle($work//mei:workList/mei:work)/replace(., '"', '\\"'), '"',
+                'title: "', local:getLocalizedTitle($work), '"',
             '}')
 };
 
@@ -66,9 +66,8 @@ declare function work:toJSON($uri as xs:string) as xs:string {
 :)
 declare function work:isWork($uri as xs:string) as xs:boolean {
     
-    exists(doc($uri)//mei:mei) and exists(doc($uri)//mei:work) and not(doc($uri)//mei:source)
+    not(exists(doc($uri)//mei:mei)) and exists(doc($uri)//mei:work) and not(doc($uri)//mei:manifestation)
 };
-
 (:~
 : Returns a works's label
 :
@@ -77,7 +76,7 @@ declare function work:isWork($uri as xs:string) as xs:boolean {
 :)
 declare function work:getLabel($work as xs:string) as xs:string {
      
-    local:getLocalizedTitle(doc($work)//mei:work)
+    local:getLocalizedTitle(doc($work))
 };
 
 (:~
